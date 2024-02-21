@@ -28,8 +28,8 @@ export class Backstage extends cdk.Stack {
             backstage_secret_name: 'backstage-secret',
             backstage_acm_arn: process.env.BACKSTAGE_ACM_ARN as string,
             argocd_acm_arn: process.env.ARGOCD_ACM_ARN as string,
-            github_client_id: process.env.AUTH_GITHUB_CLIENT_ID as string,
-            github_client_secret: process.env.AUTH_GITHUB_CLIENT_SECRET as string,
+            // github_client_id: process.env.AUTH_GITHUB_CLIENT_ID as string,
+            // github_client_secret: process.env.AUTH_GITHUB_CLIENT_SECRET as string,
             github_token: process.env.GITHUB_TOKEN as string
         }
 
@@ -87,8 +87,8 @@ export class Backstage extends cdk.Stack {
         const backstageSecret = new secretm.Secret(this, "backstage-secret", {
             secretObjectValue: {
                 githubToken: cdk.SecretValue.unsafePlainText(commonProps.github_token),
-                githubClientId: cdk.SecretValue.unsafePlainText(commonProps.github_client_id),
-                githubClientSecret: cdk.SecretValue.unsafePlainText(commonProps.github_client_secret),
+                // githubClientId: cdk.SecretValue.unsafePlainText(commonProps.github_client_id),
+                // githubClientSecret: cdk.SecretValue.unsafePlainText(commonProps.github_client_secret),
                 backstageAcmArn: cdk.SecretValue.unsafePlainText(commonProps.backstage_acm_arn),
                 argocdAcmArn: cdk.SecretValue.unsafePlainText(commonProps.argocd_acm_arn),
             }
@@ -562,20 +562,20 @@ export class Backstage extends cdk.Stack {
                                     property:  "githubToken"
                                 }
                             },
-                            {
-                                secretKey: "AUTH_GITHUB_CLIENT_ID",
-                                remoteRef: {
-                                    key: backstageSecret.secretName,
-                                    property:  "githubClientId"
-                                }
-                            },
-                            {
-                                secretKey: "AUTH_GITHUB_CLIENT_SECRET",
-                                remoteRef: {
-                                    key: backstageSecret.secretName,
-                                    property:  "githubClientSecret"
-                                }
-                            },
+                            // {
+                            //     secretKey: "AUTH_GITHUB_CLIENT_ID",
+                            //     remoteRef: {
+                            //         key: backstageSecret.secretName,
+                            //         property:  "githubClientId"
+                            //     }
+                            // },
+                            // {
+                            //     secretKey: "AUTH_GITHUB_CLIENT_SECRET",
+                            //     remoteRef: {
+                            //         key: backstageSecret.secretName,
+                            //         property:  "githubClientSecret"
+                            //     }
+                            // },
                             {
                                 secretKey: "BACKSTAGE_ACM_ARN",
                                 remoteRef: {
