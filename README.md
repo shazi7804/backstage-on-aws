@@ -55,5 +55,24 @@ Common Name (e.g. server FQDN or YOUR name) []: argocd.local
 export ARGOCD_ACM_ARN="arn:aws:acm:us-east-1:xxxxx:certificate/xxxxx"
 
 echo $ARGOCD_ACM_ARN
+```
+
+- Setup AWS CDK Toolkit
+
+Next, we'll install the AWS CDK Toolkit. The toolkit is a command-line utility which allows you to work with CDK apps.
 
 ```
+> npm install -g aws-cdk@latest
+> cdk --version
+2.128.0 (build d995261)
+```
+
+
+
+- Git clone repository for backstage infrastructure
+```
+> git clone https://github.com/shazi7804/backstage-on-aws
+> cd backstage-on-aws
+> cdk deploy
+```
+
