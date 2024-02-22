@@ -601,5 +601,9 @@ export class BackstageInfra extends cdk.Stack {
         })
         backstageExternalSecret.node.addDependency(externalSecretsHelmChart);
         backstageExternalSecret.node.addDependency(externalSecretsServiceAccount);
+
+
+        // Output
+        new cdk.CfnOutput(this, 'EcrRepositoryUri', { value: this.backstageImageRepository.repositoryUri });
     }
 }

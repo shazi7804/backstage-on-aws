@@ -92,6 +92,9 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 ```
 > git clone https://github.com/shazi7804/platform-engineering-with-backstage/
 > cd platform-engineering-with-backstage && yarn install
+> yarn build:backend --config ../../app-config.yaml
+> DOCKER_BUILDKIT=1 docker build . -t backstage
+> docker tag backstage $ECR_REPO
 ```
 
 ```
@@ -102,7 +105,7 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 
  ✅  Environment aws://xxxxx/us-east-1 bootstrapped.
 
-> cdk deploy
+> cdk deploy BackstageInfra
 Do you wish to deploy these changes (y/n)? y
 ```
 
