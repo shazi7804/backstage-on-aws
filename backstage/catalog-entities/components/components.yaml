@@ -5,7 +5,7 @@ metadata:
   description: A collection of all components
 spec:
   targets:
-    # - ./components/backstage.yaml
-    - ./components/argocd.yaml
-    - ./components/crossplane.yaml
-    - ./components/kyverno.yaml
+    # - ./backstage.yaml
+    - ./argocd.yaml
+    - ./crossplane.yaml
+    - ./kyverno.yaml
