@@ -1,0 +1,102 @@
+organization:
+  name: Backstage Demo Site by Scott Liao
+
+app:
+  title: Backstage Demo
+  baseUrl: https://localhost
+
+backend:
+  baseUrl: https://localhost
+  listen:
+    port: 7007
+  csp:
+    connect-src: ["'self'", 'http:', 'https:']
+  cors:
+    origin: http://localhost:3000
+    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+    credentials: true
+  database:
+    client: better-sqlite3
+    connection: ':memory:'
+  cache:
+    store: memory
+  reading:
+    allow:
+      - host: github.com
+      - host: localhost
+
+# kubernetes:
+#   serviceLocatorMethod:
+#     type: 'multiTenant'
+#   clusterLocatorMethods:
+#     - type: 'config'
+#       clusters:
+#         - url: https://350198E3560CC3143DC526762BF5A14B.sk1.us-east-1.eks.amazonaws.com
+#           name: backstage
+#           authProvider: 'aws'
+#           caData: ${K8S_CA_DATA}
+#           authMetadata:
+#             kubernetes.io/x-k8s-aws-id: demo-blueprint
+# aws:
+#   mainAccount:
+#   accounts:
+#     - accountId: ${AWS_ACCOUNT_ID}
+#       accessKeyId: ${AWS_ACCESS_KEY_ID}
+#       secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+
+auth:
+  providers:
+    github:
+      development:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+integrations:
+  github:
+    - host: github.com
+      token: ${GITHUB_TOKEN}
+
+costInsights:
+  engineerCost: 200000
+
+proxy:
+  # '/argocd/api':
+  #   target: https://<your-argocd-instance>/api/v1/
+  #   changeOrigin: true
+  #   secure: false
+  #   headers:
+  #     Cookie:
+  #       $env: ARGOCD_AUTH_TOKEN
+
+techdocs:
+  builder: 'local' # Alternatives - 'external'
+  generator:
+    runIn: 'docker' # Alternatives - 'local'
+  publisher:
+    type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
+
+scaffolder:
+  # see https://backstage.io/docs/features/software-templates/configuration for software template options
+
+catalog:
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
+  locations:
+    - type: file
+      target: all-catalogs.yaml
+      rules:
+        - allow: [Component, System, API, Resource, Location, Template, User, Group]
+    # Examples
+    - type: file
+      target: examples/template/template.yaml
+      rules:
+        - allow: [Template]
+    - type: file
+      target: examples/entities.yaml
+      rules:
+        - allow: [Component, System, API, Resource]
+    - type: file
+      target: examples/org.yaml
+      rules:
+        - allow: [User, Group]
+

@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  proxy:
+    build:
+      context: .
+      dockerfile: assets/nginx/Dockerfile
+    ports:
+      - "443:443"
+    restart: always
+
+  backstage:
+    depends_on:
+      - proxy
+    image: backstage
+    env_file: .env
+    ports:
+      - "7007:7007"
+    restart: always

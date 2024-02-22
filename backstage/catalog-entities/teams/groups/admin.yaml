@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: admin
+  title: Backstage Admin
+  description: The backstage unit
+spec:
+  type: admin
+  children: []

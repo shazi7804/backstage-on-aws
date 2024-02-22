@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: resources
+  description: A collection of all Backstage entities, except users, groups, and templates
+spec:
+  targets:
+    - ./catalog-entities/teams/all-teams.yaml
+    - ./catalog-entities/templates/all-templates.yaml
+    - ./catalog-entities/components/components.yaml

@@ -1,0 +1,91 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: create-github-repository
+  title: Creates a Github Repository
+  description: Creates a Github Repository
+  tags: ['github']
+spec:
+  owner: guest
+  type: service
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+        - owner
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: User
+    - title: Configuration repository options
+      properties:
+        repoUrl: # need a place to store this entity information.
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedOwners: ['shazi7804']
+            allowedHosts: ['github.com']
+        defaultBranch:
+          default: main
+          type: string
+        repoVisibility:
+          type: string
+          enum: ['private', 'public', 'internal']
+  steps:
+    - id: create-repo
+      name: Create a Github Repository
+      action: github:repo:create
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+  
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
+  
+    - id: init-repo
+      name: Initialize Repository
+      action: github:repo:push
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: ${{ parameters.defaultBranch }}
+        repoVisibility: ${{ parameters.repoVisibility }}
+        gitAuthorName: ${{ user.entity.metadata.name }}
+        gitAuthorEmail: ${{ user.entity.spec.profile.email }}
+
+    - id: wait
+      name: Waiting for the repo to be ready
+      action: "roadiehq:utils:sleep"
+      input:
+        amount: 5
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['init-repo'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}

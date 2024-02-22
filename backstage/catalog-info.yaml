@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: platform-engineering-with-backstage
+  annotations:
+    github.com/project-slug: shazi7804/platform-engineering-with-backstage
+    backstage.io/kubernetes-id: backstage
+    backstage.io/kubernetes-namespace: backstage
+    endoflife.date/products: nodejs@18,postgresql@15.5
+    argocd/app-name: backstage
+spec:
+  type: service
+  lifecycle: production
+  owner: admin

@@ -90,6 +90,17 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 
 #### Deploy backstage infrastructure
 
+- Upload backstage application to Amazon ECR image
+```
+# Build backstage
+> cd backstage/ && yarn install
+> yarn build:backend --config ../../app-config.yaml
+
+# Build image
+> DOCKER_BUILDKIT=1 docker build . -t backstage
+> docker tag backstage $ECR_REPO
+```
+
 - Deploy backstage infra like ECR, EKS and addons.
 ```
 > git clone https://github.com/shazi7804/backstage-on-aws
@@ -103,14 +114,4 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 Do you wish to deploy these changes (y/n)? y
 ```
 
-- Upload backstage application to Amazon ECR image
-```
-# Build backstage
-> cd backstage/ && yarn install
-> yarn build:backend --config ../../app-config.yaml
-
-# Build image
-> DOCKER_BUILDKIT=1 docker build . -t backstage
-> docker tag backstage $ECR_REPO
-```
 

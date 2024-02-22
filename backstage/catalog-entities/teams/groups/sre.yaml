@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: sre
+  title: SRE Team
+  description: The sre unit
+spec:
+  type: sre
+  children: []

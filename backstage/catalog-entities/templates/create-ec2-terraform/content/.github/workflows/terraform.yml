@@ -1,0 +1,71 @@
+name: Terraform Plan
+on:
+  workflow_dispatch:
+    inputs:
+      instance_name:
+        description: 'Name of the AWS Instance'  # What's this input for?
+        required: true  # Is it optional or required?
+      aws_region:
+        description: 'AWS Region for the instance'
+        required: true
+      instance_type:
+        description: 'AWS instance type'
+        required: true
+      instance_image_id:
+        description: 'AWS instance image id'
+        required: true
+      action:
+        description: 'Action to perform (apply/destroy)'
+        required: true
+defaults:
+  run:
+    working-directory: .
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    if: ${{ github.event.inputs.action == 'apply' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: 'Terraform Init'
+        id: init
+        run: terraform init
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -var instance_image_id=${{ github.event.inputs.instance_image_id }} -var instance_name=${{ github.event.inputs.instance_name }} -var aws_region=${{ github.event.inputs.aws_region }} -var instance_type=${{ github.event.inputs.instance_type }}
+
+  # Destroying
+  destroy_instance:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.action == 'destroy' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+        
+      - name: Terraform Init
+        run: terraform init
+        
+      - name: Terraform fmt
+        run: terraform fmt -check
+        
+      - name: Terraform destroy
+        run: terraform destroy -var instance_name=${{ github.event.inputs.instance_name }} -var aws_region=${{ github.event.inputs.aws_region }} -auto-approve

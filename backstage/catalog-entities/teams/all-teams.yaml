@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+    name: teams
+    description: Approved users and teams for Backstage
+spec:
+    targets:
+        - ./users/scottliao.yaml
+        - ./groups/admin.yaml

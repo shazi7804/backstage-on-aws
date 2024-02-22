@@ -1,0 +1,145 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: create-ec2-instance-terraform
+  title: Create or Delete an EC2 Instance by Terraform
+  description: Create or delete an Amazon EC2 Instance to deploy your application thourgh Terraform and Github Actions
+  tags: ['aws', 'ec2', 'terraform']
+spec:
+  owner: guests
+  type: service
+  parameters:
+    - title: Fill backstage information
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: User
+    - title: Configuration of AWS EC2 Instance 
+      required:
+         - InstanceName
+         - Region
+         - InstanceType
+      properties:
+        InstanceName:
+          title: Instance Name.
+          type: string
+          description: Name of the Instnace to be created.
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        Region:
+          title: AWS Region
+          type: string
+          description: Name of the region where you want to create your instance eg:- us-east-1, ap-south-1 etc.
+          default: 'us-east-1'
+
+        InstanceType:
+          title: Type of Instance.
+          type: string
+          description: Type of the instance that you want to deploy, for eg:- t2.medium, t3.medium etc.
+          default: 't3.nano'
+          enum:
+            - t3.nano
+            - t3.small
+            - t3.medium
+            - t4g.micro
+            - t4g.small
+        InstanceImageId:
+          title: Image id of Instance.
+          type: string
+          description: Image id of the instance that you want to deploy. eg:- default is Amazon Linux 2023
+          default: 'ami-0e731c8a588258d0d'
+        action:
+          title: action
+          type: string
+          description: What action do you want to perform? Create or delete?
+          default: 'apply'
+          enum:
+            - apply
+            - destroy
+
+    - title: Choose a Repository Location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Location of the repository
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedOwners: ['shazi7804']
+            allowedHosts: ['github.com']
+        defaultBranch:
+          default: main
+          type: string
+        repoVisibility:
+          type: string
+          enum: ['private', 'public', 'internal']
+          default: 'public'
+
+  steps:
+    - id: fetch-base
+      name: Fetching Details from content folder
+      action: fetch:template
+      input:
+        url: ./content
+        copyWithoutRender:
+          - .github/workflows/*
+        values:
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
+          instanceName: ${{ parameters.InstanceName }}
+          repoUrl: ${{ parameters.repoUrl | parseRepoUrl }}
+
+    - id: publish
+      name: Publishing Details
+      action: github:repo:push
+      input:
+        allowedHosts: ['github.com']
+        gitCommitMessage: "Requesting an Amazon EC2 instance '${{ parameters.InstanceName }}' through Backstage."
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: ${{ parameters.defaultBranch }}
+        gitAuthorName: ${{ user.entity.metadata.name }}
+        gitAuthorEmail: ${{ user.entity.spec.profile.email }}
+
+    - id: github-action
+      name: Starting GitHub action
+      action: github:actions:dispatch
+      input:
+        workflowId:  terraform.yml
+        repoUrl: ${{ parameters.repoUrl }}
+        branchOrTagName: ${{ parameters.defaultBranch }}
+        workflowInputs:
+          instance_name: ${{ parameters.InstanceName }}
+          aws_region: ${{ parameters.Region }}
+          instance_type: ${{ parameters.InstanceType }}
+          instance_image_id: ${{ parameters.InstanceImageId }}
+          action: ${{ parameters.action }}
+
+    - id: register
+      name: Registering the new Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml' # where the info of the catalog is stored.
+
+# Output links  are displayed to the user after the template execution.
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
