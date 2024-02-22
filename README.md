@@ -10,6 +10,13 @@ The following prerequisites are required to complete this workshop:
 
 ## Getting started 
 
+### AWS Environment 
+
+```
+export AWS_REGION=us-east-1
+export AWS_ACCOUNT=<your-account-id>
+```
+
 ### AWS Cloud9 Setup
 
 In this section we are going to familiarize ourselves with the Cloud9 environment that has been provisioned and pre-configured. AWS Cloud9 is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser.
@@ -22,7 +29,7 @@ On the bottom of the Cloud9 IDE, you will see a terminal window. This is where w
 
 ### Backstage Setup
 
-- Create two SSL certifications for Backstage and Argo CD
+#### Create two SSL certifications for Backstage and Argo CD
 
 ```
 # backstage.local
@@ -57,7 +64,7 @@ export ARGOCD_ACM_ARN="arn:aws:acm:us-east-1:xxxxx:certificate/xxxxx"
 echo $ARGOCD_ACM_ARN
 ```
 
-- Setup AWS CDK Toolkit
+#### Setup AWS CDK Toolkit
 
 Next, we'll install the AWS CDK Toolkit. The toolkit is a command-line utility which allows you to work with CDK apps.
 
@@ -65,14 +72,37 @@ Next, we'll install the AWS CDK Toolkit. The toolkit is a command-line utility w
 > npm install -g aws-cdk@latest
 > cdk --version
 2.128.0 (build d995261)
+
+> npm install -g yarn
+```
+
+
+#### Export Github credential
+
+```
+export GITHUB_TOKEN=xxxx
+export AUTH_GITHUB_CLIENT_ID=xxxx
+export AUTH_GITHUB_CLIENT_SECRET=xxx
 ```
 
 
 
-- Git clone repository for backstage infrastructure
+#### Deploy backstage infrastructure
+
+```
+> git clone https://github.com/shazi7804/platform-engineering-with-backstage/
+> cd platform-engineering-with-backstage && yarn install
+```
+
 ```
 > git clone https://github.com/shazi7804/backstage-on-aws
 > cd backstage-on-aws
+> yarn install
+> cdk bootstrap
+
+ ✅  Environment aws://xxxxx/us-east-1 bootstrapped.
+
 > cdk deploy
+Do you wish to deploy these changes (y/n)? y
 ```
 

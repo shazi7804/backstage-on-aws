@@ -10,27 +10,31 @@ import * as secretm from 'aws-cdk-lib/aws-secretsmanager';
 import { KubectlV28Layer } from '@aws-cdk/lambda-layer-kubectl-v28';
 import fs = require('fs');
 
-export interface BackstageProps extends cdk.StackProps {
-
+export interface BackstageInfraProps extends cdk.StackProps {
+    readonly cluster_name: string,
+    readonly database_username: string
+    readonly database_port: number,
+    readonly repositoryName: string,
+    readonly namespace: string,
+    readonly cluster_database_secret_name: string,
+    readonly backstage_secret_name: string,
+    readonly backstage_acm_arn: string,
+    readonly argocd_acm_arn: string,
+    // readonly github_client_id: process.env.AUTH_GITHUB_CLIENT_ID as string,
+    // readonly github_client_secret: process.env.AUTH_GITHUB_CLIENT_SECRET as string,
+    readonly github_token: string
 }
 
-export class Backstage extends cdk.Stack {
-    constructor(scope: Construct, id: string) {
-        super(scope, id);
+export class BackstageInfra extends cdk.Stack {
+    readonly cluster: eks.Cluster
+    readonly backstageImageRepository: ecr.Repository
+    readonly db: rds.DatabaseCluster
+
+    constructor(scope: Construct, id: string, props: BackstageInfraProps) {
+        super(scope, id, props);
 
         const commonProps = {
-            cluster_name: 'backstage',
-            database_username: 'postgres',
-            database_port: 5432,
-            repositoryName: 'demobackstage',
-            namespace: 'backstage',
-            cluster_database_secret_name: 'backstage-database-secret',
-            backstage_secret_name: 'backstage-secret',
-            backstage_acm_arn: process.env.BACKSTAGE_ACM_ARN as string,
-            argocd_acm_arn: process.env.ARGOCD_ACM_ARN as string,
-            // github_client_id: process.env.AUTH_GITHUB_CLIENT_ID as string,
-            // github_client_secret: process.env.AUTH_GITHUB_CLIENT_SECRET as string,
-            github_token: process.env.GITHUB_TOKEN as string
+
         }
 
         const subnetProps = [
@@ -57,8 +61,8 @@ export class Backstage extends cdk.Stack {
             assumedBy: new iam.AccountRootPrincipal()
         });
 
-        const cluster = new eks.Cluster(this, 'eks-cluster', {
-            clusterName: commonProps.cluster_name,
+        this.cluster = new eks.Cluster(this, 'eks-cluster', {
+            clusterName: props.cluster_name,
             vpc,
             vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
             defaultCapacity: 1,
@@ -67,7 +71,7 @@ export class Backstage extends cdk.Stack {
             kubectlLayer: new KubectlV28Layer(this, 'LayerVersion'),
             endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE
         });
-        const nodeGroup = cluster.addAutoScalingGroupCapacity('worker-node', {
+        const nodeGroup = this.cluster.addAutoScalingGroupCapacity('worker-node', {
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
             maxInstanceLifetime: cdk.Duration.days(7),
             minCapacity: 1,
@@ -76,7 +80,7 @@ export class Backstage extends cdk.Stack {
         const databaseSecret = new secretm.Secret(this, "database-secret", {
             generateSecretString: {
                 secretStringTemplate: JSON.stringify({
-                    username: commonProps.database_username,
+                    username: props.database_username,
                 }),
                 excludePunctuation: true,
                 includeSpace: false,
@@ -86,11 +90,11 @@ export class Backstage extends cdk.Stack {
 
         const backstageSecret = new secretm.Secret(this, "backstage-secret", {
             secretObjectValue: {
-                githubToken: cdk.SecretValue.unsafePlainText(commonProps.github_token),
+                githubToken: cdk.SecretValue.unsafePlainText(props.github_token),
                 // githubClientId: cdk.SecretValue.unsafePlainText(commonProps.github_client_id),
                 // githubClientSecret: cdk.SecretValue.unsafePlainText(commonProps.github_client_secret),
-                backstageAcmArn: cdk.SecretValue.unsafePlainText(commonProps.backstage_acm_arn),
-                argocdAcmArn: cdk.SecretValue.unsafePlainText(commonProps.argocd_acm_arn),
+                backstageAcmArn: cdk.SecretValue.unsafePlainText(props.backstage_acm_arn),
+                argocdAcmArn: cdk.SecretValue.unsafePlainText(props.argocd_acm_arn),
             }
         });
 
@@ -98,18 +102,18 @@ export class Backstage extends cdk.Stack {
         // https://aws.github.io/aws-eks-best-practices/security/docs/iam/#update-the-aws-node-daemonset-to-use-irsa
         const awsNodeTrustPolicy = new cdk.CfnJson(this, 'aws-node-trust-policy', {
             value: {
-              [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:aud`]: 'sts.amazonaws.com',
-              [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: 'system:serviceaccount:kube-system:aws-node',
+              [`${this.cluster.openIdConnectProvider.openIdConnectProviderIssuer}:aud`]: 'sts.amazonaws.com',
+              [`${this.cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: 'system:serviceaccount:kube-system:aws-node',
             },
         });
-        const awsNodePrincipal = new iam.OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
+        const awsNodePrincipal = new iam.OpenIdConnectPrincipal(this.cluster.openIdConnectProvider).withConditions({
             StringEquals: awsNodeTrustPolicy,
         });
         const awsNodeRole = new iam.Role(this, 'aws-node-role', {
             assumedBy: awsNodePrincipal
         })
 
-        const awsAuth = new eks.AwsAuth(this, 'aws-auth', {cluster})
+        const awsAuth = new eks.AwsAuth(this, 'aws-auth', { cluster: this.cluster })
         awsAuth.addRoleMapping(mastersRole, {
             username: 'masterRole',
             groups: ['system:masters']
@@ -119,31 +123,31 @@ export class Backstage extends cdk.Stack {
         new eks.CfnAddon(this, 'vpc-cni', {
             addonName: 'vpc-cni',
             resolveConflicts: 'OVERWRITE',
-            clusterName: cluster.clusterName,
+            clusterName: this.cluster.clusterName,
             serviceAccountRoleArn: awsNodeRole.roleArn
         });
         new eks.CfnAddon(this, 'kube-proxy', {
             addonName: 'kube-proxy',
             resolveConflicts: 'OVERWRITE',
-            clusterName: cluster.clusterName,
+            clusterName: this.cluster.clusterName,
         });
         new eks.CfnAddon(this, 'core-dns', {
             addonName: 'coredns',
             resolveConflicts: 'OVERWRITE',
-            clusterName: cluster.clusterName,
+            clusterName: this.cluster.clusterName,
         });
 
         awsNodeRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'))
 
         /////////////////////////////////////
         // Addons : External Secrets
-        const externalSecretsNamespace = cluster.addManifest("external-secrets-namespace", {
+        const externalSecretsNamespace = this.cluster.addManifest("external-secrets-namespace", {
             apiVersion: "v1",
             kind: "Namespace",
             metadata: { name: "external-secrets" },
         });
 
-        const externalSecretsServiceAccount = cluster.addServiceAccount(
+        const externalSecretsServiceAccount = this.cluster.addServiceAccount(
             "ExternalSecretsServiceAccount",
             {
               namespace: "external-secrets",
@@ -186,25 +190,25 @@ export class Backstage extends cdk.Stack {
             values: {},
             
         }
-        const externalSecretsHelmChart = cluster.addHelmChart('external-secrets-helm-chart', externalSecretsHelmChartProps)
+        const externalSecretsHelmChart = this.cluster.addHelmChart('external-secrets-helm-chart', externalSecretsHelmChartProps)
         externalSecretsHelmChart.node.addDependency(externalSecretsServiceAccount);
 
         const clusterSecretStoreName = "secret-manager-store";
-        const clusterSecretStore = new eks.KubernetesManifest(cluster.stack, "ClusterSecretStore", {
-            cluster: cluster,
+        const clusterSecretStore = new eks.KubernetesManifest(this.cluster.stack, "ClusterSecretStore", {
+            cluster: this.cluster,
             manifest: [
                 {
                     apiVersion: "external-secrets.io/v1beta1",
                     kind: "ClusterSecretStore",
                     metadata: {
                         name: clusterSecretStoreName,
-                        namespace: commonProps.namespace
+                        namespace: props.namespace
                     },
                     spec: {
                         provider: {
                             aws: {
                                 service: "SecretsManager",
-                                region: cluster.stack.region,
+                                region: this.cluster.stack.region,
                                 auth: {
                                     jwt: {
                                         serviceAccountRef: {
@@ -223,15 +227,15 @@ export class Backstage extends cdk.Stack {
         clusterSecretStore.node.addDependency(externalSecretsServiceAccount);
 
 
-        const databaseExternalSecret = new eks.KubernetesManifest(cluster.stack, "BackstageDatabaseExternalSecret", {
-            cluster: cluster,
+        const databaseExternalSecret = new eks.KubernetesManifest(this.cluster.stack, "BackstageDatabaseExternalSecret", {
+            cluster: this.cluster,
             manifest: [
                 {
                     apiVersion: "external-secrets.io/v1beta1",
                     kind: "ExternalSecret",
                     metadata: {
                         name: "external-backstage-db-secret",
-                        namespace: commonProps.namespace
+                        namespace: props.namespace
                     },
                     spec: {
                         secretStoreRef: {
@@ -239,7 +243,7 @@ export class Backstage extends cdk.Stack {
                             kind: "ClusterSecretStore",
                         },
                         target: {
-                            name: commonProps.cluster_database_secret_name,
+                            name: props.cluster_database_secret_name,
                         },
                         data: [
                             {
@@ -272,13 +276,13 @@ export class Backstage extends cdk.Stack {
             document: iam.PolicyDocument.fromJson(iamIngressPolicyDocument),
         })
 
-        const awsAlbControllerServiceAccount = cluster.addServiceAccount('aws-load-balancer-controller', {
+        const awsAlbControllerServiceAccount = this.cluster.addServiceAccount('aws-load-balancer-controller', {
             name: 'aws-load-balancer-controller',
             namespace: 'kube-system',
         });
         awsAlbControllerServiceAccount.role.attachInlinePolicy(iamIngressPolicy);
 
-        const awsLoadBalancerControllerChart = cluster.addHelmChart('aws-loadbalancer-controller', {
+        const awsLoadBalancerControllerChart = this.cluster.addHelmChart('aws-loadbalancer-controller', {
             chart: 'aws-load-balancer-controller',
             repository: 'https://aws.github.io/eks-charts',
             namespace: 'kube-system',
@@ -287,7 +291,7 @@ export class Backstage extends cdk.Stack {
             wait: true,
             timeout: cdk.Duration.minutes(15),
             values: {
-                clusterName: cluster.clusterName,
+                clusterName: this.cluster.clusterName,
                 serviceAccount: {
                 create: false,
                 name: awsAlbControllerServiceAccount.serviceAccountName,
@@ -300,13 +304,13 @@ export class Backstage extends cdk.Stack {
         });
         awsLoadBalancerControllerChart.node.addDependency(nodeGroup);
         awsLoadBalancerControllerChart.node.addDependency(awsAlbControllerServiceAccount);
-        awsLoadBalancerControllerChart.node.addDependency(cluster.openIdConnectProvider);
-        awsLoadBalancerControllerChart.node.addDependency(cluster.awsAuth);
+        awsLoadBalancerControllerChart.node.addDependency(this.cluster.openIdConnectProvider);
+        awsLoadBalancerControllerChart.node.addDependency(this.cluster.awsAuth);
 
         /////////////////////////////////////
         // Addons : Crossplane
         const crossplaneNamespaceName = "crossplane"
-        const crossplaneNamespace = cluster.addManifest('crossplane-namespace', {
+        const crossplaneNamespace = this.cluster.addManifest('crossplane-namespace', {
             apiVersion: 'v1',
             kind: 'Namespace',
             metadata: {
@@ -314,7 +318,7 @@ export class Backstage extends cdk.Stack {
             }
         })
 
-        const crossplaneServiceAccount = cluster.addServiceAccount('crossplane-controller-sa', {
+        const crossplaneServiceAccount = this.cluster.addServiceAccount('crossplane-controller-sa', {
             name: "crossplane-aws-irsa",
             namespace: crossplaneNamespaceName
         })
@@ -331,7 +335,7 @@ export class Backstage extends cdk.Stack {
             ],
         }))
 
-        const crossplaneHelmChartAddOn = cluster.addHelmChart('crossplane-helm-chart', {
+        const crossplaneHelmChartAddOn = this.cluster.addHelmChart('crossplane-helm-chart', {
             chart: 'crossplane',
             release: 'crossplane',
             version: '1.15.0',
@@ -360,7 +364,7 @@ export class Backstage extends cdk.Stack {
         crossplaneHelmChartAddOn.node.addDependency(crossplaneNamespace)
         crossplaneHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart)
 
-        const crossplaneControllerConfig = cluster.addManifest("crossplane-controller-config", {
+        const crossplaneControllerConfig = this.cluster.addManifest("crossplane-controller-config", {
             apiVersion: 'pkg.crossplane.io/v1alpha1',
             kind: 'ControllerConfig',
             metadata: {
@@ -384,7 +388,7 @@ export class Backstage extends cdk.Stack {
         crossplaneControllerConfig.node.addDependency(crossplaneHelmChartAddOn)
 
 
-        const crossplaneAwsProviderManifest = cluster.addManifest("crossplane-aws-provider", {
+        const crossplaneAwsProviderManifest = this.cluster.addManifest("crossplane-aws-provider", {
             apiVersion: 'pkg.crossplane.io/v1',
             kind: 'Provider',
             metadata: {
@@ -399,7 +403,7 @@ export class Backstage extends cdk.Stack {
         });
         crossplaneAwsProviderManifest.node.addDependency(crossplaneControllerConfig)
         
-        const crossplaneKubernetesProviderManifest = cluster.addManifest("crossplane-kubernetes-provider", {
+        const crossplaneKubernetesProviderManifest = this.cluster.addManifest("crossplane-kubernetes-provider", {
             apiVersion: 'pkg.crossplane.io/v1',
             kind: 'Provider',
             metadata: {
@@ -414,7 +418,7 @@ export class Backstage extends cdk.Stack {
         /////////////////////////////////////
         // Addons : ArgoCD
         const argoNamespaceName = "argocd"
-        const argoNamespace = cluster.addManifest('argo-namespace', {
+        const argoNamespace = this.cluster.addManifest('argo-namespace', {
             apiVersion: 'v1',
             kind: 'Namespace',
             metadata: {
@@ -422,7 +426,7 @@ export class Backstage extends cdk.Stack {
             }
         });
 
-        const argoHelmChartAddOn = cluster.addHelmChart('argo-helm-chart', {
+        const argoHelmChartAddOn = this.cluster.addHelmChart('argo-helm-chart', {
             repository: "https://argoproj.github.io/argo-helm",
             chart: "argo-cd",
             release: "argocd",
@@ -443,7 +447,7 @@ export class Backstage extends cdk.Stack {
                             "alb.ingress.kubernetes.io/healthcheck-protocol": "HTTPS",
                             // "alb.ingress.kubernetes.io/listen-ports": '[{"HTTP":80}, {"HTTPS":443}]'
                             "alb.ingress.kubernetes.io/listen-ports": '[{"HTTPS":443}]',
-                            "alb.ingress.kubernetes.io/certificate-arn": commonProps.argocd_acm_arn
+                            "alb.ingress.kubernetes.io/certificate-arn": props.argocd_acm_arn
                         },
                         paths: ["/"]
                     }
@@ -454,7 +458,7 @@ export class Backstage extends cdk.Stack {
         argoHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart)
 
         const argoRolloutsNamespaceName = "argocd-rollouts"
-        const argoRolloutsNamespace = cluster.addManifest('argo-rollouts-namespace', {
+        const argoRolloutsNamespace = this.cluster.addManifest('argo-rollouts-namespace', {
             apiVersion: 'v1',
             kind: 'Namespace',
             metadata: {
@@ -462,7 +466,7 @@ export class Backstage extends cdk.Stack {
             }
         });
 
-        const argoRolloutsHelmChartAddOn = cluster.addHelmChart('argo-rollouts-helm-chart', {
+        const argoRolloutsHelmChartAddOn = this.cluster.addHelmChart('argo-rollouts-helm-chart', {
             repository: "https://argoproj.github.io/argo-helm",
             chart: "argo-rollouts",
             release: "argo-rollouts",
@@ -505,9 +509,9 @@ export class Backstage extends cdk.Stack {
             },
         });
         
-        databaseSecurityGroup.addIngressRule(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(commonProps.database_port), "Connect from within VPC");
+        databaseSecurityGroup.addIngressRule(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(props.database_port), "Connect from within VPC");
 
-        const db = new rds.DatabaseCluster(this, "backstage-database-instance", {
+        this.db = new rds.DatabaseCluster(this, "backstage-database-instance", {
             engine,
             vpc,
             vpcSubnets: {
@@ -521,30 +525,30 @@ export class Backstage extends cdk.Stack {
             }),
         });
 
-        const backstageImageRepository = new ecr.Repository(this, "backstageImageRepository", {
-            repositoryName: commonProps.repositoryName
+        this.backstageImageRepository = new ecr.Repository(this, "backstageImageRepository", {
+            repositoryName: props.repositoryName
         });
 
-        const backstageNamespace = new eks.KubernetesManifest(cluster.stack, "BackstageNamespace", {
-            cluster: cluster,
+        const backstageNamespace = new eks.KubernetesManifest(this.cluster.stack, "BackstageNamespace", {
+            cluster: this.cluster,
             manifest: [
                 {
                     apiVersion: "v1",
                     kind: "Namespace",
-                    metadata: { name: commonProps.namespace }
+                    metadata: { name: props.namespace }
                 },
             ],
         });
 
-        const backstageExternalSecret = new eks.KubernetesManifest(cluster.stack, "BackstageExternalSecret", {
-            cluster: cluster,
+        const backstageExternalSecret = new eks.KubernetesManifest(this.cluster.stack, "BackstageExternalSecret", {
+            cluster: this.cluster,
             manifest: [
                 {
                     apiVersion: "external-secrets.io/v1beta1",
                     kind: "ExternalSecret",
                     metadata: {
                         name: "external-backstage-secret",
-                        namespace: commonProps.namespace
+                        namespace: props.namespace
                     },
                     spec: {
                         secretStoreRef: {
@@ -552,7 +556,7 @@ export class Backstage extends cdk.Stack {
                             kind: "ClusterSecretStore",
                         },
                         target: {
-                            name: commonProps.backstage_secret_name,
+                            name: props.backstage_secret_name,
                         },
                         data: [
                             {
@@ -597,76 +601,5 @@ export class Backstage extends cdk.Stack {
         })
         backstageExternalSecret.node.addDependency(externalSecretsHelmChart);
         backstageExternalSecret.node.addDependency(externalSecretsServiceAccount);
-
-        const backstageHelmChartAddOn = cluster.addHelmChart('backstage-helmchart', {
-            chart: 'backstage',
-            namespace: 'backstage',
-            release: 'backstage',
-            version: '1.8.2',
-            repository: 'https://backstage.github.io/charts',
-            wait: true,
-            timeout: cdk.Duration.minutes(15),
-            values: {
-                "ingress": {
-                    "enabled": true,
-                    "className": "alb",
-                    // "host"
-                    "annotations": {
-                        "alb.ingress.kubernetes.io/scheme": "internet-facing",
-                        "alb.ingress.kubernetes.io/target-type": "ip",
-                        "alb.ingress.kubernetes.io/certificate-arn": commonProps.backstage_acm_arn
-                    }
-                },
-                "backstage": {
-                    "image": {
-                        "registry": this.account + '.dkr.ecr.' + cluster.stack.region + '.amazonaws.com',
-                        "repository": backstageImageRepository.repositoryName,
-                        "tag": 'latest'
-                    },
-                    "appConfig": {
-                        "app": { 
-                            "baseUrl": 'http://localhost'
-                        },
-                        "backend": {
-                            "baseUrl": 'http://localhost',
-                            "database": {
-                                "client": "pg",
-                                "connection": {
-                                    "host": db.clusterEndpoint.hostname,
-                                    "port": db.clusterEndpoint.port,
-                                    "user": "${POSTGRES_USER}",
-                                    "password": "${POSTGRES_PASSWORD}"
-                                }
-                            }
-                        },
-                        "auth": {
-                            "providers": {
-                                "github": {
-                                    "development": {
-                                        "clientId": "${AUTH_GITHUB_CLIENT_ID}",
-                                        "clientSecret": "${AUTH_GITHUB_CLIENT_SECRET}"
-                                    }
-                                }
-                            }
-                        },
-                        "integrations": {
-                            "github": [{
-                                "host": "github.com",
-                                "token": "${GITHUB_TOKEN}"
-                            }]
-                        }
-                    },
-                    "extraEnvVarsSecrets": [
-                        commonProps.cluster_database_secret_name,
-                        commonProps.backstage_secret_name
-                    ],
-                    "command": ["node", "packages/backend", "--config", "app-config.yaml"]
-                }
-            }
-        })
-        backstageHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart);
-        backstageHelmChartAddOn.node.addDependency(backstageNamespace);
-        backstageHelmChartAddOn.node.addDependency(backstageExternalSecret);
-
     }
 }
