@@ -453,6 +453,23 @@ export class BackstageInfra extends cdk.Stack {
         argoHelmChartAddOn.node.addDependency(crossplaneNamespace)
         argoHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart)
 
+        const argoCm = this.cluster.addManifest('argo-user-backstage', {
+            apiVersion: 'v1',
+            kind: 'ConfigMap',
+            metadata: {
+                name: 'argocd-cm',
+                namespace: props.namespace,
+                labels: {
+                    'app.kubernetes.io/name': 'argocd-cm',
+                    'app.kubernetes.io/part-of': 'argocd'
+                }
+            },
+            data: {
+                'account.admin': 'apiKey'
+            }
+        });
+
+
         const argoRolloutsNamespaceName = "argocd-rollouts"
         const argoRolloutsNamespace = this.cluster.addManifest('argo-rollouts-namespace', {
             apiVersion: 'v1',
@@ -599,72 +616,72 @@ export class BackstageInfra extends cdk.Stack {
         backstageExternalSecret.node.addDependency(externalSecretsHelmChart);
         backstageExternalSecret.node.addDependency(externalSecretsServiceAccount);
 
-        const backstageHelmChartAddOn = this.cluster.addHelmChart('backstage-helmchart', {
-            chart: 'backstage',
-            namespace: 'backstage',
-            release: 'backstage',
-            version: '1.8.2',
-            repository: 'https://backstage.github.io/charts',
-            wait: true,
-            timeout: cdk.Duration.minutes(15),
-            values: {
-                "ingress": {
-                    "enabled": true,
-                    "className": "alb",
-                    // "host"
-                    "annotations": {
-                        "alb.ingress.kubernetes.io/scheme": "internet-facing",
-                        "alb.ingress.kubernetes.io/target-type": "ip",
-                        "alb.ingress.kubernetes.io/certificate-arn": props.backstage_acm_arn
-                    }
-                },
-                "backstage": {
-                    "image": {
-                        "registry": this.account + '.dkr.ecr.' + this.region + '.amazonaws.com',
-                        "repository": props.repository_name,
-                        "tag": 'latest'
-                    },
-                    "appConfig": {
-                        "app": { 
-                            "baseUrl": 'http://localhost'
-                        },
-                        "backend": {
-                            "baseUrl": 'http://localhost',
-                            "database": {
-                                "client": "pg",
-                                "connection": {
-                                    "host": this.db.clusterEndpoint.hostname,
-                                    "port": this.db.clusterEndpoint.port,
-                                    "user": "${POSTGRES_USER}",
-                                    "password": "${POSTGRES_PASSWORD}"
-                                }
-                            }
-                        },
-                        "auth": {
-                            "providers": {
-                                "github": {
-                                    "development": {
-                                        "clientId": "${AUTH_GITHUB_CLIENT_ID}",
-                                        "clientSecret": "${AUTH_GITHUB_CLIENT_SECRET}"
-                                    }
-                                }
-                            }
-                        },
-                        "integrations": {
-                            "github": [{
-                                "host": "github.com",
-                                "token": "${GITHUB_TOKEN}"
-                            }]
-                        }
-                    },
-                    "extraEnvVarsSecrets": [
-                        props.cluster_database_secret_name,
-                        props.backstage_secret_name
-                    ],
-                    "command": ["node", "packages/backend", "--config", "app-config.yaml"]
-                }
-            }
-        })
+        // const backstageHelmChartAddOn = this.cluster.addHelmChart('backstage-helmchart', {
+        //     chart: 'backstage',
+        //     namespace: 'backstage',
+        //     release: 'backstage',
+        //     version: '1.8.2',
+        //     repository: 'https://backstage.github.io/charts',
+        //     wait: true,
+        //     timeout: cdk.Duration.minutes(15),
+        //     values: {
+        //         "ingress": {
+        //             "enabled": true,
+        //             "className": "alb",
+        //             // "host"
+        //             "annotations": {
+        //                 "alb.ingress.kubernetes.io/scheme": "internet-facing",
+        //                 "alb.ingress.kubernetes.io/target-type": "ip",
+        //                 "alb.ingress.kubernetes.io/certificate-arn": props.backstage_acm_arn
+        //             }
+        //         },
+        //         "backstage": {
+        //             "image": {
+        //                 "registry": this.account + '.dkr.ecr.' + this.region + '.amazonaws.com',
+        //                 "repository": props.repository_name,
+        //                 "tag": 'latest'
+        //             },
+        //             "appConfig": {
+        //                 "app": { 
+        //                     "baseUrl": 'http://localhost'
+        //                 },
+        //                 "backend": {
+        //                     "baseUrl": 'http://localhost',
+        //                     "database": {
+        //                         "client": "pg",
+        //                         "connection": {
+        //                             "host": this.db.clusterEndpoint.hostname,
+        //                             "port": this.db.clusterEndpoint.port,
+        //                             "user": "${POSTGRES_USER}",
+        //                             "password": "${POSTGRES_PASSWORD}"
+        //                         }
+        //                     }
+        //                 },
+        //                 "auth": {
+        //                     "providers": {
+        //                         "github": {
+        //                             "development": {
+        //                                 "clientId": "${AUTH_GITHUB_CLIENT_ID}",
+        //                                 "clientSecret": "${AUTH_GITHUB_CLIENT_SECRET}"
+        //                             }
+        //                         }
+        //                     }
+        //                 },
+        //                 "integrations": {
+        //                     "github": [{
+        //                         "host": "github.com",
+        //                         "token": "${GITHUB_TOKEN}"
+        //                     }]
+        //                 }
+        //             },
+        //             "extraEnvVarsSecrets": [
+        //                 props.cluster_database_secret_name,
+        //                 props.backstage_secret_name
+        //             ],
+        //             "command": ["node", "packages/backend", "--config", "app-config.yaml"]
+        //         }
+        //     }
+        // })
 
 
         // Output

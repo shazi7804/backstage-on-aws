@@ -43,13 +43,13 @@ backend:
 #     - accountId: ${AWS_ACCOUNT_ID}
 #       accessKeyId: ${AWS_ACCESS_KEY_ID}
 #       secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
-
-auth:
-  providers:
-    github:
-      development:
-        clientId: ${AUTH_GITHUB_CLIENT_ID}
-        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+#
+# auth:
+#   providers:
+#     github:
+#       development:
+#         clientId: ${AUTH_GITHUB_CLIENT_ID}
+#         clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
 integrations:
   github:
     - host: github.com
@@ -65,7 +65,7 @@ proxy:
   #   secure: false
   #   headers:
   #     Cookie:
-  #       $env: ARGOCD_AUTH_TOKEN
+  #       $env: 'ARGOCD_AUTH_TOKEN'
 
 techdocs:
   builder: 'local' # Alternatives - 'external'

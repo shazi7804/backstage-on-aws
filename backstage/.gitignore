@@ -59,4 +59,5 @@ assets/nginx/*.key
 # vscode database functionality support files
 *.session.sql
 
-
+# Backstage
+helm-values.developement.yaml
