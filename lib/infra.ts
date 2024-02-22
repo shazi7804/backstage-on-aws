@@ -27,7 +27,7 @@ export interface BackstageInfraProps extends cdk.StackProps {
 
 export class BackstageInfra extends cdk.Stack {
     readonly cluster: eks.Cluster
-    readonly backstageImageRepository: ecr.Repository
+    // readonly backstageImageRepository: ecr.Repository
     readonly db: rds.DatabaseCluster
 
     constructor(scope: Construct, id: string, props: BackstageInfraProps) {
@@ -522,9 +522,9 @@ export class BackstageInfra extends cdk.Stack {
             }),
         });
 
-        this.backstageImageRepository = new ecr.Repository(this, "backstageImageRepository", {
-            repositoryName: props.repository_name
-        });
+        // this.backstageImageRepository = new ecr.Repository(this, "backstageImageRepository", {
+        //     repositoryName: props.repository_name
+        // });
 
         const backstageNamespace = new eks.KubernetesManifest(this.cluster.stack, "BackstageNamespace", {
             cluster: this.cluster,
@@ -599,11 +599,78 @@ export class BackstageInfra extends cdk.Stack {
         backstageExternalSecret.node.addDependency(externalSecretsHelmChart);
         backstageExternalSecret.node.addDependency(externalSecretsServiceAccount);
 
+        const backstageHelmChartAddOn = this.cluster.addHelmChart('backstage-helmchart', {
+            chart: 'backstage',
+            namespace: 'backstage',
+            release: 'backstage',
+            version: '1.8.2',
+            repository: 'https://backstage.github.io/charts',
+            wait: true,
+            timeout: cdk.Duration.minutes(15),
+            values: {
+                "ingress": {
+                    "enabled": true,
+                    "className": "alb",
+                    // "host"
+                    "annotations": {
+                        "alb.ingress.kubernetes.io/scheme": "internet-facing",
+                        "alb.ingress.kubernetes.io/target-type": "ip",
+                        "alb.ingress.kubernetes.io/certificate-arn": props.backstage_acm_arn
+                    }
+                },
+                "backstage": {
+                    "image": {
+                        "registry": this.account + '.dkr.ecr.' + this.region + '.amazonaws.com',
+                        "repository": props.repository_name,
+                        "tag": 'latest'
+                    },
+                    "appConfig": {
+                        "app": { 
+                            "baseUrl": 'http://localhost'
+                        },
+                        "backend": {
+                            "baseUrl": 'http://localhost',
+                            "database": {
+                                "client": "pg",
+                                "connection": {
+                                    "host": this.db.clusterEndpoint.hostname,
+                                    "port": this.db.clusterEndpoint.port,
+                                    "user": "${POSTGRES_USER}",
+                                    "password": "${POSTGRES_PASSWORD}"
+                                }
+                            }
+                        },
+                        "auth": {
+                            "providers": {
+                                "github": {
+                                    "development": {
+                                        "clientId": "${AUTH_GITHUB_CLIENT_ID}",
+                                        "clientSecret": "${AUTH_GITHUB_CLIENT_SECRET}"
+                                    }
+                                }
+                            }
+                        },
+                        "integrations": {
+                            "github": [{
+                                "host": "github.com",
+                                "token": "${GITHUB_TOKEN}"
+                            }]
+                        }
+                    },
+                    "extraEnvVarsSecrets": [
+                        props.cluster_database_secret_name,
+                        props.backstage_secret_name
+                    ],
+                    "command": ["node", "packages/backend", "--config", "app-config.yaml"]
+                }
+            }
+        })
+
 
         // Output
         new cdk.CfnOutput(this, 'AuroraPostgresEndpoint', { value: this.db.clusterEndpoint.hostname});
         new cdk.CfnOutput(this, 'EksClusterArn', { value: this.cluster.clusterArn });
         new cdk.CfnOutput(this, 'EksClusterKubectlRoleArn', { value: mastersRole.roleArn });
-        new cdk.CfnOutput(this, 'EcrRepositoryUri', { value: this.backstageImageRepository.repositoryUri });
+        // new cdk.CfnOutput(this, 'EcrRepositoryUri', { value: this.backstageImageRepository.repositoryUri });
     }
 }
