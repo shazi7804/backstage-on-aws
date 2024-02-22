@@ -5,9 +5,10 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 
 export interface BackstageProps extends cdk.StackProps {
-    readonly cluster: eks.Cluster
-    readonly backstageImageRepository: ecr.Repository
-    readonly db: rds.DatabaseCluster
+    readonly cluster_name: string
+    readonly repository_name: string
+    // readonly backstageImageRepository: ecr.Repository
+    // readonly db: rds.DatabaseCluster
     backstage_acm_arn: string
     cluster_database_secret_name: string
     backstage_secret_name: string
@@ -16,7 +17,22 @@ export interface BackstageProps extends cdk.StackProps {
 export class Backstage extends cdk.Stack {
     constructor(scope: Construct, id: string, props: BackstageProps) {
         super(scope, id, props);
-        const backstageHelmChartAddOn = props.cluster.addHelmChart('backstage-helmchart', {
+
+        const cluster = eks.Cluster.fromClusterAttributes(this, 'backstage-cluster', {
+            clusterName: props.cluster_name,
+            kubectlRoleArn: cdk.Fn.importValue('EksClusterKubectlRoleArn')
+        });
+
+        const repo = ecr.Repository.fromRepositoryAttributes(this, 'backstage-repo', {
+            repositoryName: props.repository_name,
+            repositoryArn: 'arn:aws:ecr:' + cluster.stack.region + ':' + cdk.Stack.of(this).account + ':repository/' + props.repository_name,
+        });
+
+        const db = rds.DatabaseCluster.fromDatabaseClusterAttributes(this, 'backstage-db', {
+            clusterIdentifier: 'backstage'
+        });
+
+        const backstageHelmChartAddOn = cluster.addHelmChart('backstage-helmchart', {
             chart: 'backstage',
             namespace: 'backstage',
             release: 'backstage',
@@ -37,8 +53,8 @@ export class Backstage extends cdk.Stack {
                 },
                 "backstage": {
                     "image": {
-                        "registry": this.account + '.dkr.ecr.' + props.cluster.stack.region + '.amazonaws.com',
-                        "repository": props.backstageImageRepository.repositoryName,
+                        "registry": this.account + '.dkr.ecr.' + this.region + '.amazonaws.com',
+                        "repository": repo.repositoryName,
                         "tag": 'latest'
                     },
                     "appConfig": {
@@ -50,8 +66,8 @@ export class Backstage extends cdk.Stack {
                             "database": {
                                 "client": "pg",
                                 "connection": {
-                                    "host": props.db.clusterEndpoint.hostname,
-                                    "port": props.db.clusterEndpoint.port,
+                                    "host": cdk.Fn.importValue('AuroraPostgresEndpoint'),
+                                    "port": '5432',
                                     "user": "${POSTGRES_USER}",
                                     "password": "${POSTGRES_PASSWORD}"
                                 }

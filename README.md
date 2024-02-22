@@ -38,8 +38,7 @@ Next, we'll install the AWS CDK Toolkit. The toolkit is a command-line utility w
 
 > curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.5/2024-01-04/bin/linux/amd64/kubectl
 > chmod +x ./kubectl
-> mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
-> echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
+> sudo mv kubectl /usr/local/bin/
 > kubectl version --client
 Client Version: v1.28.5
 ```
@@ -100,7 +99,7 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 
  ✅  Environment aws://xxxxx/us-east-1 bootstrapped.
 
-> cdk deploy BackstageInfra
+> cdk deploy BackstageInfraStack
 Do you wish to deploy these changes (y/n)? y
 ```
 

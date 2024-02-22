@@ -1,0 +1,2722 @@
+Resources:
+  backstageVpc66223E50:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/Resource
+  backstageVpcPublicSubnetSubnet1Subnet24AA699A:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      CidrBlock: 10.0.0.0/20
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: PublicSubnet
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: kubernetes.io/role/elb
+          Value: "1"
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc/PublicSubnetSubnet1
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PublicSubnetSubnet1/Subnet
+  backstageVpcPublicSubnetSubnet1RouteTable7CF1D739:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: kubernetes.io/role/elb
+          Value: "1"
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc/PublicSubnetSubnet1
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PublicSubnetSubnet1/RouteTable
+  backstageVpcPublicSubnetSubnet1RouteTableAssociation35FA8207:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: backstageVpcPublicSubnetSubnet1RouteTable7CF1D739
+      SubnetId:
+        Ref: backstageVpcPublicSubnetSubnet1Subnet24AA699A
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PublicSubnetSubnet1/RouteTableAssociation
+  backstageVpcPublicSubnetSubnet1DefaultRoute70A21DCE:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: backstageVpcIGW878BE904
+      RouteTableId:
+        Ref: backstageVpcPublicSubnetSubnet1RouteTable7CF1D739
+    DependsOn:
+      - backstageVpcVPCGW2D3A4288
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PublicSubnetSubnet1/DefaultRoute
+  backstageVpcPublicSubnetSubnet1EIP6B468369:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: kubernetes.io/role/elb
+          Value: "1"
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc/PublicSubnetSubnet1
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PublicSubnetSubnet1/EIP
+  backstageVpcPublicSubnetSubnet1NATGateway8EF52BCF:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+          - backstageVpcPublicSubnetSubnet1EIP6B468369
+          - AllocationId
+      SubnetId:
+        Ref: backstageVpcPublicSubnetSubnet1Subnet24AA699A
+      Tags:
+        - Key: kubernetes.io/role/elb
+          Value: "1"
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc/PublicSubnetSubnet1
+    DependsOn:
+      - backstageVpcPublicSubnetSubnet1DefaultRoute70A21DCE
+      - backstageVpcPublicSubnetSubnet1RouteTableAssociation35FA8207
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PublicSubnetSubnet1/NATGateway
+  backstageVpcPublicSubnetSubnet2Subnet588C7128:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      CidrBlock: 10.0.16.0/20
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: PublicSubnet
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: kubernetes.io/role/elb
+          Value: "1"
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc/PublicSubnetSubnet2
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PublicSubnetSubnet2/Subnet
+  backstageVpcPublicSubnetSubnet2RouteTableCEBDFA60:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: kubernetes.io/role/elb
+          Value: "1"
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc/PublicSubnetSubnet2
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PublicSubnetSubnet2/RouteTable
+  backstageVpcPublicSubnetSubnet2RouteTableAssociation3629D6BE:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: backstageVpcPublicSubnetSubnet2RouteTableCEBDFA60
+      SubnetId:
+        Ref: backstageVpcPublicSubnetSubnet2Subnet588C7128
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PublicSubnetSubnet2/RouteTableAssociation
+  backstageVpcPublicSubnetSubnet2DefaultRoute9082E2D5:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: backstageVpcIGW878BE904
+      RouteTableId:
+        Ref: backstageVpcPublicSubnetSubnet2RouteTableCEBDFA60
+    DependsOn:
+      - backstageVpcVPCGW2D3A4288
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PublicSubnetSubnet2/DefaultRoute
+  backstageVpcPrivateSubnetSubnet1Subnet80049FE4:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      CidrBlock: 10.0.32.0/20
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: PrivateSubnet
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: kubernetes.io/role/internal-elb
+          Value: "1"
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet1
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet1/Subnet
+  backstageVpcPrivateSubnetSubnet1RouteTableD2D265BF:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: kubernetes.io/role/internal-elb
+          Value: "1"
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet1
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet1/RouteTable
+  backstageVpcPrivateSubnetSubnet1RouteTableAssociationD2B60A51:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: backstageVpcPrivateSubnetSubnet1RouteTableD2D265BF
+      SubnetId:
+        Ref: backstageVpcPrivateSubnetSubnet1Subnet80049FE4
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet1/RouteTableAssociation
+  backstageVpcPrivateSubnetSubnet1DefaultRouteCBFCAC3C:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: backstageVpcPublicSubnetSubnet1NATGateway8EF52BCF
+      RouteTableId:
+        Ref: backstageVpcPrivateSubnetSubnet1RouteTableD2D265BF
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet1/DefaultRoute
+  backstageVpcPrivateSubnetSubnet2Subnet7D386E97:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      CidrBlock: 10.0.48.0/20
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: PrivateSubnet
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: kubernetes.io/role/internal-elb
+          Value: "1"
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet2
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet2/Subnet
+  backstageVpcPrivateSubnetSubnet2RouteTableC9AF1E61:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: kubernetes.io/role/internal-elb
+          Value: "1"
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet2
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet2/RouteTable
+  backstageVpcPrivateSubnetSubnet2RouteTableAssociation478F1F96:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: backstageVpcPrivateSubnetSubnet2RouteTableC9AF1E61
+      SubnetId:
+        Ref: backstageVpcPrivateSubnetSubnet2Subnet7D386E97
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet2/RouteTableAssociation
+  backstageVpcPrivateSubnetSubnet2DefaultRouteE8D425EF:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: backstageVpcPublicSubnetSubnet1NATGateway8EF52BCF
+      RouteTableId:
+        Ref: backstageVpcPrivateSubnetSubnet2RouteTableC9AF1E61
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/PrivateSubnetSubnet2/DefaultRoute
+  backstageVpcIGW878BE904:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: BackstageInfraStack/backstageVpc
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/IGW
+  backstageVpcVPCGW2D3A4288:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId:
+        Ref: backstageVpcIGW878BE904
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/VPCGW
+  backstageVpcRestrictDefaultSecurityGroupCustomResource613D3012:
+    Type: Custom::VpcRestrictDefaultSG
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E
+          - Arn
+      DefaultSecurityGroupId:
+        Fn::GetAtt:
+          - backstageVpc66223E50
+          - DefaultSecurityGroup
+      Account:
+        Ref: AWS::AccountId
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageVpc/RestrictDefaultSecurityGroupCustomResource/Default
+  CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: Inline
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:AuthorizeSecurityGroupIngress
+                  - ec2:AuthorizeSecurityGroupEgress
+                  - ec2:RevokeSecurityGroupIngress
+                  - ec2:RevokeSecurityGroupEgress
+                Resource:
+                  - Fn::Join:
+                      - ""
+                      - - "arn:"
+                        - Ref: AWS::Partition
+                        - ":ec2:"
+                        - Ref: AWS::Region
+                        - ":"
+                        - Ref: AWS::AccountId
+                        - :security-group/
+                        - Fn::GetAtt:
+                            - backstageVpc66223E50
+                            - DefaultSecurityGroup
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role
+  CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: dd5711540f04e06aa955d7f4862fc04e8cdea464cb590dae91ed2976bb78098e.zip
+      Timeout: 900
+      MemorySize: 128
+      Handler: __entrypoint__.handler
+      Role:
+        Fn::GetAtt:
+          - CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0
+          - Arn
+      Runtime: nodejs18.x
+      Description: Lambda function for removing all inbound/outbound rules from the VPC default security group
+    DependsOn:
+      - CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler
+      aws:asset:path: asset.dd5711540f04e06aa955d7f4862fc04e8cdea464cb590dae91ed2976bb78098e
+      aws:asset:property: Code
+  adminroleF78B7FDC:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::Join:
+                  - ""
+                  - - "arn:"
+                    - Ref: AWS::Partition
+                    - ":iam::"
+                    - Ref: AWS::AccountId
+                    - :root
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/admin-role/Resource
+  LayerVersion3878DA3A:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      Content:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: bdb2015ec68b53161d29e5910113dcb0b789ba26659fcfdcddddf8256bde19ef.zip
+      Description: /opt/kubectl/kubectl 1.28; /opt/helm/helm 3.13
+      LicenseInfo: Apache-2.0
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/LayerVersion/Resource
+      aws:asset:path: asset.bdb2015ec68b53161d29e5910113dcb0b789ba26659fcfdcddddf8256bde19ef.zip
+      aws:asset:is-bundled: false
+      aws:asset:property: Content
+  eksclusterKubectlHandlerRole12CC1C9C:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - Fn::If:
+            - eksclusterHasEcrPublic577EBB4A
+            - Fn::Join:
+                - ""
+                - - "arn:"
+                  - Ref: AWS::Partition
+                  - :iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly
+            - Ref: AWS::NoValue
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/KubectlHandlerRole/Resource
+  eksclusterKubectlHandlerRoleDefaultPolicyFD80DE45:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: eks:DescribeCluster
+            Effect: Allow
+            Resource:
+              Fn::GetAtt:
+                - ekscluster92983EFB
+                - Arn
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Resource:
+              Fn::GetAtt:
+                - eksclusterCreationRole183DA047
+                - Arn
+        Version: "2012-10-17"
+      PolicyName: eksclusterKubectlHandlerRoleDefaultPolicyFD80DE45
+      Roles:
+        - Ref: eksclusterKubectlHandlerRole12CC1C9C
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/KubectlHandlerRole/DefaultPolicy/Resource
+  eksclusterRoleAD55CC89:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: eks.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonEKSClusterPolicy
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/Role/Resource
+  eksclusterControlPlaneSecurityGroupBAB2FC0A:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EKS Control Plane Security Group
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ControlPlaneSecurityGroup/Resource
+  eksclusterControlPlaneSecurityGroupfromBackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDF443A2C28D4A:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDF:443
+      FromPort: 443
+      GroupId:
+        Fn::GetAtt:
+          - eksclusterControlPlaneSecurityGroupBAB2FC0A
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+          - GroupId
+      ToPort: 443
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ControlPlaneSecurityGroup/from BackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDF:443
+  eksclusterControlPlaneSecurityGroupfromBackstageInfraStackeksclusterClusterSecurityGroup796AA3C9443DF11E482:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:443
+      FromPort: 443
+      GroupId:
+        Fn::GetAtt:
+          - eksclusterControlPlaneSecurityGroupBAB2FC0A
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      ToPort: 443
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ControlPlaneSecurityGroup/from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:443
+  eksclusterCreationRole183DA047:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS:
+                - Fn::GetAtt:
+                    - awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454
+                    - Outputs.BackstageInfraStackawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleBCDC6B80Arn
+                - Fn::GetAtt:
+                    - awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454
+                    - Outputs.BackstageInfraStackawscdkawseksClusterResourceProviderOnEventHandlerServiceRole0D66A851Arn
+                - Fn::GetAtt:
+                    - eksclusterKubectlHandlerRole12CC1C9C
+                    - Arn
+        Version: "2012-10-17"
+    DependsOn:
+      - backstageVpcIGW878BE904
+      - backstageVpcPrivateSubnetSubnet1DefaultRouteCBFCAC3C
+      - backstageVpcPrivateSubnetSubnet1RouteTableD2D265BF
+      - backstageVpcPrivateSubnetSubnet1RouteTableAssociationD2B60A51
+      - backstageVpcPrivateSubnetSubnet1Subnet80049FE4
+      - backstageVpcPrivateSubnetSubnet2DefaultRouteE8D425EF
+      - backstageVpcPrivateSubnetSubnet2RouteTableC9AF1E61
+      - backstageVpcPrivateSubnetSubnet2RouteTableAssociation478F1F96
+      - backstageVpcPrivateSubnetSubnet2Subnet7D386E97
+      - backstageVpcPublicSubnetSubnet1DefaultRoute70A21DCE
+      - backstageVpcPublicSubnetSubnet1EIP6B468369
+      - backstageVpcPublicSubnetSubnet1NATGateway8EF52BCF
+      - backstageVpcPublicSubnetSubnet1RouteTable7CF1D739
+      - backstageVpcPublicSubnetSubnet1RouteTableAssociation35FA8207
+      - backstageVpcPublicSubnetSubnet1Subnet24AA699A
+      - backstageVpcPublicSubnetSubnet2DefaultRoute9082E2D5
+      - backstageVpcPublicSubnetSubnet2RouteTableCEBDFA60
+      - backstageVpcPublicSubnetSubnet2RouteTableAssociation3629D6BE
+      - backstageVpcPublicSubnetSubnet2Subnet588C7128
+      - backstageVpc66223E50
+      - backstageVpcRestrictDefaultSecurityGroupCustomResource613D3012
+      - backstageVpcVPCGW2D3A4288
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/Resource/CreationRole/Resource
+  eksclusterCreationRoleDefaultPolicy3CACA8C6:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: iam:PassRole
+            Effect: Allow
+            Resource:
+              Fn::GetAtt:
+                - eksclusterRoleAD55CC89
+                - Arn
+          - Action:
+              - eks:CreateCluster
+              - eks:CreateFargateProfile
+              - eks:DeleteCluster
+              - eks:DescribeCluster
+              - eks:DescribeUpdate
+              - eks:TagResource
+              - eks:UntagResource
+              - eks:UpdateClusterConfig
+              - eks:UpdateClusterVersion
+            Effect: Allow
+            Resource:
+              - Fn::Join:
+                  - ""
+                  - - "arn:"
+                    - Ref: AWS::Partition
+                    - ":eks:"
+                    - Ref: AWS::Region
+                    - ":"
+                    - Ref: AWS::AccountId
+                    - :cluster/backstage
+              - Fn::Join:
+                  - ""
+                  - - "arn:"
+                    - Ref: AWS::Partition
+                    - ":eks:"
+                    - Ref: AWS::Region
+                    - ":"
+                    - Ref: AWS::AccountId
+                    - :cluster/backstage/*
+          - Action:
+              - eks:DeleteFargateProfile
+              - eks:DescribeFargateProfile
+            Effect: Allow
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:"
+                  - Ref: AWS::Partition
+                  - ":eks:"
+                  - Ref: AWS::Region
+                  - ":"
+                  - Ref: AWS::AccountId
+                  - :fargateprofile/backstage/*
+          - Action:
+              - ec2:DescribeDhcpOptions
+              - ec2:DescribeInstances
+              - ec2:DescribeNetworkInterfaces
+              - ec2:DescribeRouteTables
+              - ec2:DescribeSecurityGroups
+              - ec2:DescribeSubnets
+              - ec2:DescribeVpcs
+              - iam:CreateServiceLinkedRole
+              - iam:GetRole
+              - iam:listAttachedRolePolicies
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: eksclusterCreationRoleDefaultPolicy3CACA8C6
+      Roles:
+        - Ref: eksclusterCreationRole183DA047
+    DependsOn:
+      - backstageVpcIGW878BE904
+      - backstageVpcPrivateSubnetSubnet1DefaultRouteCBFCAC3C
+      - backstageVpcPrivateSubnetSubnet1RouteTableD2D265BF
+      - backstageVpcPrivateSubnetSubnet1RouteTableAssociationD2B60A51
+      - backstageVpcPrivateSubnetSubnet1Subnet80049FE4
+      - backstageVpcPrivateSubnetSubnet2DefaultRouteE8D425EF
+      - backstageVpcPrivateSubnetSubnet2RouteTableC9AF1E61
+      - backstageVpcPrivateSubnetSubnet2RouteTableAssociation478F1F96
+      - backstageVpcPrivateSubnetSubnet2Subnet7D386E97
+      - backstageVpcPublicSubnetSubnet1DefaultRoute70A21DCE
+      - backstageVpcPublicSubnetSubnet1EIP6B468369
+      - backstageVpcPublicSubnetSubnet1NATGateway8EF52BCF
+      - backstageVpcPublicSubnetSubnet1RouteTable7CF1D739
+      - backstageVpcPublicSubnetSubnet1RouteTableAssociation35FA8207
+      - backstageVpcPublicSubnetSubnet1Subnet24AA699A
+      - backstageVpcPublicSubnetSubnet2DefaultRoute9082E2D5
+      - backstageVpcPublicSubnetSubnet2RouteTableCEBDFA60
+      - backstageVpcPublicSubnetSubnet2RouteTableAssociation3629D6BE
+      - backstageVpcPublicSubnetSubnet2Subnet588C7128
+      - backstageVpc66223E50
+      - backstageVpcRestrictDefaultSecurityGroupCustomResource613D3012
+      - backstageVpcVPCGW2D3A4288
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/Resource/CreationRole/DefaultPolicy/Resource
+  ekscluster92983EFB:
+    Type: Custom::AWSCDK-EKS-Cluster
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454
+          - Outputs.BackstageInfraStackawscdkawseksClusterResourceProviderframeworkonEventD8384628Arn
+      Config:
+        name: backstage
+        version: "1.28"
+        roleArn:
+          Fn::GetAtt:
+            - eksclusterRoleAD55CC89
+            - Arn
+        kubernetesNetworkConfig:
+          ipFamily: ipv4
+        resourcesVpcConfig:
+          subnetIds:
+            - Ref: backstageVpcPrivateSubnetSubnet1Subnet80049FE4
+            - Ref: backstageVpcPrivateSubnetSubnet2Subnet7D386E97
+          securityGroupIds:
+            - Fn::GetAtt:
+                - eksclusterControlPlaneSecurityGroupBAB2FC0A
+                - GroupId
+          endpointPublicAccess: true
+          endpointPrivateAccess: true
+      AssumeRoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      AttributesRevision: 2
+    DependsOn:
+      - backstageVpcIGW878BE904
+      - backstageVpcPrivateSubnetSubnet1DefaultRouteCBFCAC3C
+      - backstageVpcPrivateSubnetSubnet1RouteTableD2D265BF
+      - backstageVpcPrivateSubnetSubnet1RouteTableAssociationD2B60A51
+      - backstageVpcPrivateSubnetSubnet1Subnet80049FE4
+      - backstageVpcPrivateSubnetSubnet2DefaultRouteE8D425EF
+      - backstageVpcPrivateSubnetSubnet2RouteTableC9AF1E61
+      - backstageVpcPrivateSubnetSubnet2RouteTableAssociation478F1F96
+      - backstageVpcPrivateSubnetSubnet2Subnet7D386E97
+      - backstageVpcPublicSubnetSubnet1DefaultRoute70A21DCE
+      - backstageVpcPublicSubnetSubnet1EIP6B468369
+      - backstageVpcPublicSubnetSubnet1NATGateway8EF52BCF
+      - backstageVpcPublicSubnetSubnet1RouteTable7CF1D739
+      - backstageVpcPublicSubnetSubnet1RouteTableAssociation35FA8207
+      - backstageVpcPublicSubnetSubnet1Subnet24AA699A
+      - backstageVpcPublicSubnetSubnet2DefaultRoute9082E2D5
+      - backstageVpcPublicSubnetSubnet2RouteTableCEBDFA60
+      - backstageVpcPublicSubnetSubnet2RouteTableAssociation3629D6BE
+      - backstageVpcPublicSubnetSubnet2Subnet588C7128
+      - backstageVpc66223E50
+      - backstageVpcRestrictDefaultSecurityGroupCustomResource613D3012
+      - backstageVpcVPCGW2D3A4288
+      - eksclusterCreationRoleDefaultPolicy3CACA8C6
+      - eksclusterCreationRole183DA047
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/Resource/Resource/Default
+  eksclusterKubectlReadyBarrier2A406583:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Value: aws:cdk:eks:kubectl-ready
+    DependsOn:
+      - eksclusterCreationRoleDefaultPolicy3CACA8C6
+      - eksclusterCreationRole183DA047
+      - ekscluster92983EFB
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/KubectlReadyBarrier
+  eksclusterClusterSecurityGroupfromBackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDF44300BD6F21:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDF:443
+      FromPort: 443
+      GroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+          - GroupId
+      ToPort: 443
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ClusterSecurityGroup/from BackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDF:443
+  eksclusterClusterSecurityGroupfromBackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDFALLTRAFFIC923559F7:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDF:ALL TRAFFIC
+      GroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      IpProtocol: "-1"
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+          - GroupId
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ClusterSecurityGroup/from BackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDF:ALL TRAFFIC
+  eksclusterClusterSecurityGroupfromBackstageInfraStackeksclusterClusterSecurityGroup796AA3C94436E1BB7D7:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:443
+      FromPort: 443
+      GroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      ToPort: 443
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ClusterSecurityGroup/from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:443
+  eksclusterClusterSecurityGroupfromBackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C443DF58246F:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C:443
+      FromPort: 443
+      GroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - eksclusterControlPlaneSecurityGroupBAB2FC0A
+          - GroupId
+      ToPort: 443
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ClusterSecurityGroup/from BackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C:443
+  eksclusterClusterSecurityGroupfromBackstageInfraStackeksclusterClusterSecurityGroup796AA3C9102565535A8057100:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:1025-65535
+      FromPort: 1025
+      GroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      ToPort: 65535
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ClusterSecurityGroup/from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:1025-65535
+  eksclusterClusterSecurityGroupfromBackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C102565535569B3B93:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C:1025-65535
+      FromPort: 1025
+      GroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - eksclusterControlPlaneSecurityGroupBAB2FC0A
+          - GroupId
+      ToPort: 65535
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ClusterSecurityGroup/from BackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C:1025-65535
+  eksclusterClusterSecurityGroupfromBackstageInfraStackeksclusterClusterSecurityGroup796AA3C9ALLTRAFFIC42945CCA:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:ALL TRAFFIC
+      GroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      IpProtocol: "-1"
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ClusterSecurityGroup/from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:ALL TRAFFIC
+  eksclusterAwsAuthmanifest769BDE7D:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest:
+        Fn::Join:
+          - ""
+          - - '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c8ccc589cee292cf1ccfed5fbd61654014d3b4ca42":""}},"data":{"mapRoles":"[{\"rolearn\":\"'
+            - Fn::GetAtt:
+                - adminroleF78B7FDC
+                - Arn
+            - \",\"username\":\"
+            - Fn::GetAtt:
+                - adminroleF78B7FDC
+                - Arn
+            - \",\"groups\":[\"system:masters\"]},{\"rolearn\":\"
+            - Fn::GetAtt:
+                - eksclusterNodegroupDefaultCapacityNodeGroupRole14168F44
+                - Arn
+            - \",\"username\":\"system:node:{{EC2PrivateDNSName}}\",\"groups\":[\"system:bootstrappers\",\"system:nodes\"]},{\"rolearn\":\"
+            - Fn::GetAtt:
+                - eksclusterworkernodeInstanceRole684EFBB2
+                - Arn
+            - \",\"username\":\"system:node:{{EC2PrivateDNSName}}\",\"groups\":[\"system:bootstrappers\",\"system:nodes\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8ccc589cee292cf1ccfed5fbd61654014d3b4ca42
+      Overwrite: true
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/AwsAuth/manifest/Resource/Default
+  eksclusterNodegroupDefaultCapacityNodeGroupRole14168F44:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonEKS_CNI_Policy
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource
+  eksclusterNodegroupDefaultCapacity35DF1B5D:
+    Type: AWS::EKS::Nodegroup
+    Properties:
+      AmiType: AL2_x86_64
+      ClusterName:
+        Ref: ekscluster92983EFB
+      ForceUpdateEnabled: true
+      InstanceTypes:
+        - m5.large
+      NodeRole:
+        Fn::GetAtt:
+          - eksclusterNodegroupDefaultCapacityNodeGroupRole14168F44
+          - Arn
+      ScalingConfig:
+        DesiredSize: 1
+        MaxSize: 1
+        MinSize: 1
+      Subnets:
+        - Ref: backstageVpcPrivateSubnetSubnet1Subnet80049FE4
+        - Ref: backstageVpcPrivateSubnetSubnet2Subnet7D386E97
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/NodegroupDefaultCapacity/Resource
+  eksclusterworkernodeInstanceSecurityGroupFBF9618F:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: BackstageInfraStack/eks-cluster/worker-node/InstanceSecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      Tags:
+        - Key: Name
+          Value: BackstageInfraStack/eks-cluster/worker-node
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/worker-node/InstanceSecurityGroup/Resource
+  eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDFALLTRAFFIC61CC2519:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDF:ALL TRAFFIC
+      GroupId:
+        Fn::GetAtt:
+          - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+          - GroupId
+      IpProtocol: "-1"
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+          - GroupId
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/worker-node/InstanceSecurityGroup/from BackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDF:ALL TRAFFIC
+  eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterClusterSecurityGroup796AA3C9443DCE97CE5:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:443
+      FromPort: 443
+      GroupId:
+        Fn::GetAtt:
+          - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      ToPort: 443
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/worker-node/InstanceSecurityGroup/from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:443
+  eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C44384F25914:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C:443
+      FromPort: 443
+      GroupId:
+        Fn::GetAtt:
+          - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - eksclusterControlPlaneSecurityGroupBAB2FC0A
+          - GroupId
+      ToPort: 443
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/worker-node/InstanceSecurityGroup/from BackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C:443
+  eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterClusterSecurityGroup796AA3C91025655350E26B5D1:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:1025-65535
+      FromPort: 1025
+      GroupId:
+        Fn::GetAtt:
+          - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+      ToPort: 65535
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/worker-node/InstanceSecurityGroup/from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:1025-65535
+  eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C102565535D56C7B48:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C:1025-65535
+      FromPort: 1025
+      GroupId:
+        Fn::GetAtt:
+          - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - eksclusterControlPlaneSecurityGroupBAB2FC0A
+          - GroupId
+      ToPort: 65535
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/worker-node/InstanceSecurityGroup/from BackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C:1025-65535
+  eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterClusterSecurityGroup796AA3C9ALLTRAFFICBA85235D:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:ALL TRAFFIC
+      GroupId:
+        Fn::GetAtt:
+          - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+          - GroupId
+      IpProtocol: "-1"
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - ClusterSecurityGroupId
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/worker-node/InstanceSecurityGroup/from BackstageInfraStackeksclusterClusterSecurityGroup796AA3C9:ALL TRAFFIC
+  eksclusterworkernodeInstanceRole684EFBB2:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonEKS_CNI_Policy
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+        - Key:
+            Fn::Join:
+              - ""
+              - - kubernetes.io/cluster/
+                - Ref: ekscluster92983EFB
+          Value: owned
+        - Key: Name
+          Value: BackstageInfraStack/eks-cluster/worker-node
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/worker-node/InstanceRole/Resource
+  eksclusterworkernodeInstanceProfile0B4EA429:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: eksclusterworkernodeInstanceRole684EFBB2
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/worker-node/InstanceProfile
+  eksclusterworkernodeLaunchTemplate88ED5B45:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Arn:
+            Fn::GetAtt:
+              - eksclusterworkernodeInstanceProfile0B4EA429
+              - Arn
+        ImageId:
+          Ref: SsmParameterValueawsserviceeksoptimizedami128amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter
+        InstanceType: m5.xlarge
+        Monitoring:
+          Enabled: false
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+              - GroupId
+          - Fn::GetAtt:
+              - ekscluster92983EFB
+              - ClusterSecurityGroupId
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key:
+                  Fn::Join:
+                    - ""
+                    - - kubernetes.io/cluster/
+                      - Ref: ekscluster92983EFB
+                Value: owned
+              - Key: Name
+                Value: BackstageInfraStack/eks-cluster/worker-node/LaunchTemplate
+          - ResourceType: volume
+            Tags:
+              - Key:
+                  Fn::Join:
+                    - ""
+                    - - kubernetes.io/cluster/
+                      - Ref: ekscluster92983EFB
+                Value: owned
+              - Key: Name
+                Value: BackstageInfraStack/eks-cluster/worker-node/LaunchTemplate
+        UserData:
+          Fn::Base64:
+            Fn::Join:
+              - ""
+              - - |-
+                  #!/bin/bash
+                  set -o xtrace
+                  /etc/eks/bootstrap.sh 
+                - Ref: ekscluster92983EFB
+                - " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '"
+                - Fn::GetAtt:
+                    - ekscluster92983EFB
+                    - Endpoint
+                - "' --b64-cluster-ca '"
+                - Fn::GetAtt:
+                    - ekscluster92983EFB
+                    - CertificateAuthorityData
+                - |-
+                  ' --use-max-pods true
+                  /opt/aws/bin/cfn-signal --exit-code $? --stack BackstageInfraStack --resource eksclusterworkernodeASGC44328C9 --region 
+                - Ref: AWS::Region
+      TagSpecifications:
+        - ResourceType: launch-template
+          Tags:
+            - Key:
+                Fn::Join:
+                  - ""
+                  - - kubernetes.io/cluster/
+                    - Ref: ekscluster92983EFB
+              Value: owned
+            - Key: Name
+              Value: BackstageInfraStack/eks-cluster/worker-node/LaunchTemplate
+    DependsOn:
+      - eksclusterworkernodeInstanceRole684EFBB2
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/worker-node/LaunchTemplate/Resource
+  eksclusterworkernodeASGC44328C9:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId:
+          Ref: eksclusterworkernodeLaunchTemplate88ED5B45
+        Version:
+          Fn::GetAtt:
+            - eksclusterworkernodeLaunchTemplate88ED5B45
+            - LatestVersionNumber
+      MaxInstanceLifetime: 604800
+      MaxSize: "1"
+      MinSize: "1"
+      Tags:
+        - Key:
+            Fn::Join:
+              - ""
+              - - kubernetes.io/cluster/
+                - Ref: ekscluster92983EFB
+          PropagateAtLaunch: true
+          Value: owned
+        - Key: Name
+          PropagateAtLaunch: true
+          Value: BackstageInfraStack/eks-cluster/worker-node
+      VPCZoneIdentifier:
+        - Ref: backstageVpcPrivateSubnetSubnet1Subnet80049FE4
+        - Ref: backstageVpcPrivateSubnetSubnet2Subnet7D386E97
+    UpdatePolicy:
+      AutoScalingScheduledAction:
+        IgnoreUnmodifiedGroupSizeProperties: true
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/worker-node/ASG
+  eksclusterOpenIdConnectProvider30D7C8A6:
+    Type: Custom::AWSCDKOpenIdConnectProvider
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0
+          - Arn
+      ClientIDList:
+        - sts.amazonaws.com
+      Url:
+        Fn::GetAtt:
+          - ekscluster92983EFB
+          - OpenIdConnectIssuerUrl
+      CodeHash: 350497850828a0108f064a8cb783dd16d04637d20593411e21cc5b4f9e485cd6
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/OpenIdConnectProvider/Resource/Default
+  eksclustermanifestexternalsecretsnamespaceD6B98D74:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest: '[{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"external-secrets","labels":{"aws.cdk.eks/prune-c8dd30b988ccbff88c7e3c996e577294af0d3b08ba":""}}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8dd30b988ccbff88c7e3c996e577294af0d3b08ba
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/manifest-external-secrets-namespace/Resource/Default
+  eksclusterExternalSecretsServiceAccountConditionJsonD0F92524:
+    Type: Custom::AWSCDKCfnJson
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57
+          - Arn
+      Value:
+        Fn::Join:
+          - ""
+          - - '{"'
+            - Fn::Select:
+                - 1
+                - Fn::Split:
+                    - :oidc-provider/
+                    - Ref: eksclusterOpenIdConnectProvider30D7C8A6
+            - :aud":"sts.amazonaws.com","
+            - Fn::Select:
+                - 1
+                - Fn::Split:
+                    - :oidc-provider/
+                    - Ref: eksclusterOpenIdConnectProvider30D7C8A6
+            - :sub":"system:serviceaccount:external-secrets:external-secrets-service-account"}
+    DependsOn:
+      - eksclustermanifestexternalsecretsnamespaceD6B98D74
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ExternalSecretsServiceAccount/ConditionJson/Resource/Default
+  eksclusterExternalSecretsServiceAccountRoleF9CAE35A:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                Fn::GetAtt:
+                  - eksclusterExternalSecretsServiceAccountConditionJsonD0F92524
+                  - Value
+            Effect: Allow
+            Principal:
+              Federated:
+                Ref: eksclusterOpenIdConnectProvider30D7C8A6
+        Version: "2012-10-17"
+    DependsOn:
+      - eksclustermanifestexternalsecretsnamespaceD6B98D74
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ExternalSecretsServiceAccount/Role/Resource
+  eksclusterExternalSecretsServiceAccountmanifestExternalSecretsServiceAccountServiceAccountResource03847A8F:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest:
+        Fn::Join:
+          - ""
+          - - '[{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"name":"external-secrets-service-account","namespace":"external-secrets","labels":{"aws.cdk.eks/prune-c8d0ef0ebfdb2eac1ada926d9a4b91ddeb8f263923":"","app.kubernetes.io/name":"external-secrets-service-account"},"annotations":{"eks.amazonaws.com/role-arn":"'
+            - Fn::GetAtt:
+                - eksclusterExternalSecretsServiceAccountRoleF9CAE35A
+                - Arn
+            - '"}}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8d0ef0ebfdb2eac1ada926d9a4b91ddeb8f263923
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+      - eksclustermanifestexternalsecretsnamespaceD6B98D74
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/ExternalSecretsServiceAccount/manifest-ExternalSecretsServiceAccountServiceAccountResource/Resource/Default
+  eksclusterchartexternalsecretshelmchart38CF5FEF:
+    Type: Custom::AWSCDK-EKS-HelmChart
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      Release: blueprints-addon-external-secrets
+      Chart: external-secrets
+      Version: 0.9.9
+      Wait: true
+      Timeout: 900s
+      Values: "{}"
+      Namespace: external-secrets
+      Repository: https://charts.external-secrets.io
+      CreateNamespace: true
+    DependsOn:
+      - eksclusterExternalSecretsServiceAccountConditionJsonD0F92524
+      - eksclusterExternalSecretsServiceAccountmanifestExternalSecretsServiceAccountServiceAccountResource03847A8F
+      - eksclusterExternalSecretsServiceAccountRoleF9CAE35A
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/chart-external-secrets-helm-chart/Resource/Default
+  eksclusterawsloadbalancercontrollerConditionJson629E686D:
+    Type: Custom::AWSCDKCfnJson
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57
+          - Arn
+      Value:
+        Fn::Join:
+          - ""
+          - - '{"'
+            - Fn::Select:
+                - 1
+                - Fn::Split:
+                    - :oidc-provider/
+                    - Ref: eksclusterOpenIdConnectProvider30D7C8A6
+            - :aud":"sts.amazonaws.com","
+            - Fn::Select:
+                - 1
+                - Fn::Split:
+                    - :oidc-provider/
+                    - Ref: eksclusterOpenIdConnectProvider30D7C8A6
+            - :sub":"system:serviceaccount:kube-system:aws-load-balancer-controller"}
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/aws-load-balancer-controller/ConditionJson/Resource/Default
+  eksclusterawsloadbalancercontrollerRole5E4944FA:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                Fn::GetAtt:
+                  - eksclusterawsloadbalancercontrollerConditionJson629E686D
+                  - Value
+            Effect: Allow
+            Principal:
+              Federated:
+                Ref: eksclusterOpenIdConnectProvider30D7C8A6
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/aws-load-balancer-controller/Role/Resource
+  eksclusterawsloadbalancercontrollermanifestawsloadbalancercontrollerServiceAccountResource2BAA4404:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest:
+        Fn::Join:
+          - ""
+          - - '[{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"name":"aws-load-balancer-controller","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c8b4c3b4fa41cadc12f4796f210f9e910b4ab9ba81":"","app.kubernetes.io/name":"aws-load-balancer-controller"},"annotations":{"eks.amazonaws.com/role-arn":"'
+            - Fn::GetAtt:
+                - eksclusterawsloadbalancercontrollerRole5E4944FA
+                - Arn
+            - '"}}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8b4c3b4fa41cadc12f4796f210f9e910b4ab9ba81
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/aws-load-balancer-controller/manifest-aws-load-balancer-controllerServiceAccountResource/Resource/Default
+  eksclusterchartawsloadbalancercontrollerDA0C45F8:
+    Type: Custom::AWSCDK-EKS-HelmChart
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      Release: aws-load-balancer-controller
+      Chart: aws-load-balancer-controller
+      Version: 1.7.1
+      Wait: true
+      Timeout: 900s
+      Values:
+        Fn::Join:
+          - ""
+          - - '{"clusterName":"'
+            - Ref: ekscluster92983EFB
+            - '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"enableShield":false,"enableWaf":false,"enableWafv2":false}'
+      Namespace: kube-system
+      Repository: https://aws.github.io/eks-charts
+      CreateNamespace: true
+    DependsOn:
+      - eksclusterawsloadbalancercontrollerConditionJson629E686D
+      - eksclusterawsloadbalancercontrollermanifestawsloadbalancercontrollerServiceAccountResource2BAA4404
+      - eksclusterawsloadbalancercontrollerRole5E4944FA
+      - eksclusterAwsAuthmanifest769BDE7D
+      - eksclusterKubectlReadyBarrier2A406583
+      - eksclusterOpenIdConnectProvider30D7C8A6
+      - eksclusterworkernodeASGC44328C9
+      - eksclusterworkernodeInstanceProfile0B4EA429
+      - eksclusterworkernodeInstanceRole684EFBB2
+      - eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterClusterSecurityGroup796AA3C91025655350E26B5D1
+      - eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterClusterSecurityGroup796AA3C9443DCE97CE5
+      - eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterClusterSecurityGroup796AA3C9ALLTRAFFICBA85235D
+      - eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C102565535D56C7B48
+      - eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterControlPlaneSecurityGroup8FD2357C44384F25914
+      - eksclusterworkernodeInstanceSecurityGroupfromBackstageInfraStackeksclusterworkernodeInstanceSecurityGroupDE5BAFDFALLTRAFFIC61CC2519
+      - eksclusterworkernodeInstanceSecurityGroupFBF9618F
+      - eksclusterworkernodeLaunchTemplate88ED5B45
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/chart-aws-loadbalancer-controller/Resource/Default
+  eksclustermanifestcrossplanenamespace75BC85FE:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest: '[{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"crossplane","labels":{"aws.cdk.eks/prune-c8366d84549d2f4c795b035746156ef405134e4745":""}}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8366d84549d2f4c795b035746156ef405134e4745
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/manifest-crossplane-namespace/Resource/Default
+  eksclustercrossplanecontrollersaConditionJsonC6DAFF9E:
+    Type: Custom::AWSCDKCfnJson
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57
+          - Arn
+      Value:
+        Fn::Join:
+          - ""
+          - - '{"'
+            - Fn::Select:
+                - 1
+                - Fn::Split:
+                    - :oidc-provider/
+                    - Ref: eksclusterOpenIdConnectProvider30D7C8A6
+            - :aud":"sts.amazonaws.com","
+            - Fn::Select:
+                - 1
+                - Fn::Split:
+                    - :oidc-provider/
+                    - Ref: eksclusterOpenIdConnectProvider30D7C8A6
+            - :sub":"system:serviceaccount:crossplane:crossplane-aws-irsa"}
+    DependsOn:
+      - eksclustermanifestcrossplanenamespace75BC85FE
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/crossplane-controller-sa/ConditionJson/Resource/Default
+  eksclustercrossplanecontrollersaRole478B6780:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                Fn::GetAtt:
+                  - eksclustercrossplanecontrollersaConditionJsonC6DAFF9E
+                  - Value
+            Effect: Allow
+            Principal:
+              Federated:
+                Ref: eksclusterOpenIdConnectProvider30D7C8A6
+        Version: "2012-10-17"
+    DependsOn:
+      - eksclustermanifestcrossplanenamespace75BC85FE
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/crossplane-controller-sa/Role/Resource
+  eksclustercrossplanecontrollersamanifestcrossplanecontrollersaServiceAccountResourceD82BF15C:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest:
+        Fn::Join:
+          - ""
+          - - '[{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"name":"crossplane-aws-irsa","namespace":"crossplane","labels":{"aws.cdk.eks/prune-c82d6f6d457070bdb00540236d46b1631cf1031bd6":"","app.kubernetes.io/name":"crossplane-aws-irsa"},"annotations":{"eks.amazonaws.com/role-arn":"'
+            - Fn::GetAtt:
+                - eksclustercrossplanecontrollersaRole478B6780
+                - Arn
+            - '"}}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c82d6f6d457070bdb00540236d46b1631cf1031bd6
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+      - eksclustermanifestcrossplanenamespace75BC85FE
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/crossplane-controller-sa/manifest-crossplane-controller-saServiceAccountResource/Resource/Default
+  eksclusterchartcrossplanehelmchart27500F41:
+    Type: Custom::AWSCDK-EKS-HelmChart
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      Release: crossplane
+      Chart: crossplane
+      Version: 1.15.0
+      Wait: true
+      Timeout: 600s
+      Values: '{"tolerations":[{"key":"CriticalAddonsOnly","operator":"Exists"}],"rbacManager":{"tolerations":[{"key":"CriticalAddonsOnly","operator":"Exists"}]}}'
+      Namespace: crossplane
+      Repository: https://charts.crossplane.io/stable
+    DependsOn:
+      - eksclusterchartawsloadbalancercontrollerDA0C45F8
+      - eksclusterKubectlReadyBarrier2A406583
+      - eksclustermanifestcrossplanenamespace75BC85FE
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/chart-crossplane-helm-chart/Resource/Default
+  eksclustermanifestcrossplanecontrollerconfig833D6056:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest:
+        Fn::Join:
+          - ""
+          - - '[{"apiVersion":"pkg.crossplane.io/v1alpha1","kind":"ControllerConfig","metadata":{"name":"aws-config","annotations":{"eks.amazonaws.com/role-arn":"'
+            - Fn::GetAtt:
+                - eksclustercrossplanecontrollersaRole478B6780
+                - Arn
+            - '"},"labels":{"aws.cdk.eks/prune-c8410ff444935979b14135263001b37a9b86972a9d":""}},"spec":{"podSecurityContext":{"fsGroup":2000},"tolerations":[{"key":"CriticalAddonsOnly","operator":"Exists"}]}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8410ff444935979b14135263001b37a9b86972a9d
+    DependsOn:
+      - eksclusterchartcrossplanehelmchart27500F41
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/manifest-crossplane-controller-config/Resource/Default
+  eksclustermanifestcrossplaneawsprovider3F81C6CE:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest: '[{"apiVersion":"pkg.crossplane.io/v1","kind":"Provider","metadata":{"name":"upbound-provider-family-aws","labels":{"aws.cdk.eks/prune-c8fc80bf7eaac3ae21b16343f66bce8634edffd919":""}},"spec":{"package":"xpkg.upbound.io/upbound/provider-family-aws:v1.1.0","controllerConfigRef":{"name":"aws-config"}}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8fc80bf7eaac3ae21b16343f66bce8634edffd919
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+      - eksclustermanifestcrossplanecontrollerconfig833D6056
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/manifest-crossplane-aws-provider/Resource/Default
+  eksclustermanifestcrossplanekubernetesproviderD4AD8835:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest: '[{"apiVersion":"pkg.crossplane.io/v1","kind":"Provider","metadata":{"name":"provider-terraform","labels":{"aws.cdk.eks/prune-c8d241ffd02c29105596748157f512bdfd3b435f2a":""}},"spec":{"package":"xpkg.upbound.io/upbound/provider-terraform:v0.14.1"}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8d241ffd02c29105596748157f512bdfd3b435f2a
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+      - eksclustermanifestcrossplanecontrollerconfig833D6056
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/manifest-crossplane-kubernetes-provider/Resource/Default
+  eksclustermanifestargonamespace71D765FB:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest: '[{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"argocd","labels":{"aws.cdk.eks/prune-c8c8a182e8b72776449a0bd31fbcf1375afd9f6c26":""}}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8c8a182e8b72776449a0bd31fbcf1375afd9f6c26
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/manifest-argo-namespace/Resource/Default
+  eksclusterchartargohelmchart7D4B6F0F:
+    Type: Custom::AWSCDK-EKS-HelmChart
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      Release: argocd
+      Chart: argo-cd
+      Values: '{"server":{"ingress":{"enabled":true,"annotations":{"kubernetes.io/ingress.class":"alb","alb.ingress.kubernetes.io/scheme":"internet-facing","alb.ingress.kubernetes.io/target-type":"ip","alb.ingress.kubernetes.io/target-group-attributes":"stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60","alb.ingress.kubernetes.io/group.name":"argo","alb.ingress.kubernetes.io/group.order":"1","alb.ingress.kubernetes.io/backend-protocol":"HTTPS","alb.ingress.kubernetes.io/healthcheck-protocol":"HTTPS","alb.ingress.kubernetes.io/listen-ports":"[{\"HTTPS\":443}]"},"paths":["/"]}}}'
+      Namespace: argocd
+      Repository: https://argoproj.github.io/argo-helm
+      CreateNamespace: true
+    DependsOn:
+      - eksclusterchartawsloadbalancercontrollerDA0C45F8
+      - eksclusterKubectlReadyBarrier2A406583
+      - eksclustermanifestcrossplanenamespace75BC85FE
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/chart-argo-helm-chart/Resource/Default
+  eksclustermanifestargorolloutsnamespaceFF90D01D:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest: '[{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"argocd-rollouts","labels":{"aws.cdk.eks/prune-c8adce4c9a23939cbc493079b3615a6efe434ae3d9":""}}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8adce4c9a23939cbc493079b3615a6efe434ae3d9
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/manifest-argo-rollouts-namespace/Resource/Default
+  eksclusterchartargorolloutshelmchart4303063A:
+    Type: Custom::AWSCDK-EKS-HelmChart
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      Release: argo-rollouts
+      Chart: argo-rollouts
+      Values: '{"installCRDs":true,"dashboard":{"enabled":true,"ingress":{"enabled":true,"annotations":{"kubernetes.io/ingress.class":"alb","alb.ingress.kubernetes.io/scheme":"internet-facing","alb.ingress.kubernetes.io/target-type":"ip","alb.ingress.kubernetes.io/target-group-attributes":"stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60","alb.ingress.kubernetes.io/success-codes":"200,404,301,302","alb.ingress.kubernetes.io/group.name":"argo","alb.ingress.kubernetes.io/group.order":"2"},"paths":["/rollouts"]}}}'
+      Namespace: argocd-rollouts
+      Repository: https://argoproj.github.io/argo-helm
+      CreateNamespace: true
+    DependsOn:
+      - eksclusterchartawsloadbalancercontrollerDA0C45F8
+      - eksclusterKubectlReadyBarrier2A406583
+      - eksclustermanifestargorolloutsnamespaceFF90D01D
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/eks-cluster/chart-argo-rollouts-helm-chart/Resource/Default
+  awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL:
+        Fn::Join:
+          - ""
+          - - https://s3.
+            - Ref: AWS::Region
+            - "."
+            - Ref: AWS::URLSuffix
+            - /
+            - Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+            - /b078328a22a0434cc20b8dfbb5d50c13ae695eee9162cf7121293c9f13f3295b.json
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource
+      aws:asset:path: BackstageInfraStackawscdkawseksClusterResourceProvider6D7E6510.nested.template.json
+      aws:asset:property: TemplateURL
+  awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        referencetoBackstageInfraStackLayerVersion442F70F5Ref:
+          Ref: LayerVersion3878DA3A
+        referencetoBackstageInfraStackeksclusterKubectlHandlerRole7BC1725DArn:
+          Fn::GetAtt:
+            - eksclusterKubectlHandlerRole12CC1C9C
+            - Arn
+        referencetoBackstageInfraStackbackstageVpcPrivateSubnetSubnet1SubnetFF56EC9DRef:
+          Ref: backstageVpcPrivateSubnetSubnet1Subnet80049FE4
+        referencetoBackstageInfraStackbackstageVpcPrivateSubnetSubnet2SubnetAF2448F4Ref:
+          Ref: backstageVpcPrivateSubnetSubnet2Subnet7D386E97
+        referencetoBackstageInfraStackeksclusterC7E2D951ClusterSecurityGroupId:
+          Fn::GetAtt:
+            - ekscluster92983EFB
+            - ClusterSecurityGroupId
+      TemplateURL:
+        Fn::Join:
+          - ""
+          - - https://s3.
+            - Ref: AWS::Region
+            - "."
+            - Ref: AWS::URLSuffix
+            - /
+            - Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+            - /5eed876ac539b84a8f1b209420a9a7fb34ae4cc0711e4d45d588a74385e5dc57.json
+    DependsOn:
+      - backstageVpcPrivateSubnetSubnet1DefaultRouteCBFCAC3C
+      - backstageVpcPrivateSubnetSubnet1RouteTableAssociationD2B60A51
+      - backstageVpcPrivateSubnetSubnet2DefaultRouteE8D425EF
+      - backstageVpcPrivateSubnetSubnet2RouteTableAssociation478F1F96
+      - eksclusterKubectlHandlerRoleDefaultPolicyFD80DE45
+      - eksclusterKubectlHandlerRole12CC1C9C
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource
+      aws:asset:path: BackstageInfraStackawscdkawseksKubectlProviderDD7C03F2.nested.template.json
+      aws:asset:property: TemplateURL
+  databasesecret6A44CD8F:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      GenerateSecretString:
+        ExcludePunctuation: true
+        GenerateStringKey: password
+        IncludeSpace: false
+        SecretStringTemplate: '{"username":"postgres"}'
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/database-secret/Resource
+  databasesecretAttachment925EC8E4:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId:
+        Ref: databasesecret6A44CD8F
+      TargetId:
+        Ref: backstagedatabaseinstance563CB6E3
+      TargetType: AWS::RDS::DBCluster
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/database-secret/Attachment/Resource
+  backstagesecret2FBFAFD8:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      SecretString: '{"githubToken":"","backstageAcmArn":"","argocdAcmArn":""}'
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstage-secret/Resource
+  CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: Inline
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Resource: "*"
+                Action:
+                  - iam:CreateOpenIDConnectProvider
+                  - iam:DeleteOpenIDConnectProvider
+                  - iam:UpdateOpenIDConnectProviderThumbprint
+                  - iam:AddClientIDToOpenIDConnectProvider
+                  - iam:RemoveClientIDFromOpenIDConnectProvider
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role
+  CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: 350497850828a0108f064a8cb783dd16d04637d20593411e21cc5b4f9e485cd6.zip
+      Timeout: 900
+      MemorySize: 128
+      Handler: __entrypoint__.handler
+      Role:
+        Fn::GetAtt:
+          - CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65
+          - Arn
+      Runtime: nodejs18.x
+    DependsOn:
+      - CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler
+      aws:asset:path: asset.350497850828a0108f064a8cb783dd16d04637d20593411e21cc5b4f9e485cd6
+      aws:asset:property: Code
+  awsnodetrustpolicy83070BC0:
+    Type: Custom::AWSCDKCfnJson
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57
+          - Arn
+      Value:
+        Fn::Join:
+          - ""
+          - - '{"'
+            - Fn::Select:
+                - 1
+                - Fn::Split:
+                    - :oidc-provider/
+                    - Ref: eksclusterOpenIdConnectProvider30D7C8A6
+            - :aud":"sts.amazonaws.com","
+            - Fn::Select:
+                - 1
+                - Fn::Split:
+                    - :oidc-provider/
+                    - Ref: eksclusterOpenIdConnectProvider30D7C8A6
+            - :sub":"system:serviceaccount:kube-system:aws-node"}
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/aws-node-trust-policy/Resource/Default
+  AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/AWSCDKCfnUtilsProviderCustomResourceProvider/Role
+  AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: 78b70ad373a624989fdc7740e7aa19700d82dfc386c4bc849803634716c8fa4a.zip
+      Timeout: 900
+      MemorySize: 128
+      Handler: __entrypoint__.handler
+      Role:
+        Fn::GetAtt:
+          - AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867
+          - Arn
+      Runtime: nodejs18.x
+    DependsOn:
+      - AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler
+      aws:asset:path: asset.78b70ad373a624989fdc7740e7aa19700d82dfc386c4bc849803634716c8fa4a
+      aws:asset:property: Code
+  awsnoderole29F9B05C:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                Fn::GetAtt:
+                  - awsnodetrustpolicy83070BC0
+                  - Value
+            Effect: Allow
+            Principal:
+              Federated:
+                Ref: eksclusterOpenIdConnectProvider30D7C8A6
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonEKS_CNI_Policy
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/aws-node-role/Resource
+  awsauthmanifest00199A9A:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest:
+        Fn::Join:
+          - ""
+          - - '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c834c1625f39c2e8fa0179d5ac1bafa9ffadd1b3f4":""}},"data":{"mapRoles":"[{\"rolearn\":\"'
+            - Fn::GetAtt:
+                - adminroleF78B7FDC
+                - Arn
+            - \",\"username\":\"masterRole\",\"groups\":[\"system:masters\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c834c1625f39c2e8fa0179d5ac1bafa9ffadd1b3f4
+      Overwrite: true
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/aws-auth/manifest/Resource/Default
+  vpccni:
+    Type: AWS::EKS::Addon
+    Properties:
+      AddonName: vpc-cni
+      ClusterName:
+        Ref: ekscluster92983EFB
+      ResolveConflicts: OVERWRITE
+      ServiceAccountRoleArn:
+        Fn::GetAtt:
+          - awsnoderole29F9B05C
+          - Arn
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/vpc-cni
+  kubeproxy:
+    Type: AWS::EKS::Addon
+    Properties:
+      AddonName: kube-proxy
+      ClusterName:
+        Ref: ekscluster92983EFB
+      ResolveConflicts: OVERWRITE
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/kube-proxy
+  coredns:
+    Type: AWS::EKS::Addon
+    Properties:
+      AddonName: coredns
+      ClusterName:
+        Ref: ekscluster92983EFB
+      ResolveConflicts: OVERWRITE
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/core-dns
+  externalsecretsaccesspolicyA131928C:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - kms:Decrypt
+              - secretsmanager:DescribeSecret
+              - secretsmanager:GetResourcePolicy
+              - secretsmanager:GetSecretValue
+              - secretsmanager:ListSecretVersionIds
+              - secretsmanager:ListSecrets
+              - ssm:DescribeParameters
+              - ssm:GetParameter
+              - ssm:GetParameterHistory
+              - ssm:GetParameters
+              - ssm:GetParametersByPath
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: externalsecretsaccesspolicyA131928C
+      Roles:
+        - Ref: eksclusterExternalSecretsServiceAccountRoleF9CAE35A
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/external-secrets-access-policy/Resource
+  ClusterSecretStore0D1876F4:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest:
+        Fn::Join:
+          - ""
+          - - '[{"apiVersion":"external-secrets.io/v1beta1","kind":"ClusterSecretStore","metadata":{"name":"secret-manager-store","namespace":"backstage","labels":{"aws.cdk.eks/prune-c8298b48505727f7c023bf1aba0862b2a79af73d75":""}},"spec":{"provider":{"aws":{"service":"SecretsManager","region":"'
+            - Ref: AWS::Region
+            - '","auth":{"jwt":{"serviceAccountRef":{"name":"external-secrets-service-account","namespace":"external-secrets"}}}}}}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8298b48505727f7c023bf1aba0862b2a79af73d75
+    DependsOn:
+      - eksclusterchartexternalsecretshelmchart38CF5FEF
+      - eksclusterExternalSecretsServiceAccountConditionJsonD0F92524
+      - eksclusterExternalSecretsServiceAccountmanifestExternalSecretsServiceAccountServiceAccountResource03847A8F
+      - eksclusterExternalSecretsServiceAccountRoleF9CAE35A
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/ClusterSecretStore/Resource/Default
+  BackstageDatabaseExternalSecretA3EDF340:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest:
+        Fn::Join:
+          - ""
+          - - '[{"apiVersion":"external-secrets.io/v1beta1","kind":"ExternalSecret","metadata":{"name":"external-backstage-db-secret","namespace":"backstage","labels":{"aws.cdk.eks/prune-c81dc9637be2902af3c3263f9e8a1f5a3acbd73358":""}},"spec":{"secretStoreRef":{"name":"secret-manager-store","kind":"ClusterSecretStore"},"target":{"name":"backstage-database-secret"},"data":[{"secretKey":"POSTGRES_PASSWORD","remoteRef":{"key":"'
+            - Fn::Join:
+                - "-"
+                - - Fn::Select:
+                      - 0
+                      - Fn::Split:
+                          - "-"
+                          - Fn::Select:
+                              - 6
+                              - Fn::Split:
+                                  - ":"
+                                  - Ref: databasesecret6A44CD8F
+                  - Fn::Select:
+                      - 1
+                      - Fn::Split:
+                          - "-"
+                          - Fn::Select:
+                              - 6
+                              - Fn::Split:
+                                  - ":"
+                                  - Ref: databasesecret6A44CD8F
+            - '","property":"password"}},{"secretKey":"POSTGRES_USER","remoteRef":{"key":"'
+            - Fn::Join:
+                - "-"
+                - - Fn::Select:
+                      - 0
+                      - Fn::Split:
+                          - "-"
+                          - Fn::Select:
+                              - 6
+                              - Fn::Split:
+                                  - ":"
+                                  - Ref: databasesecret6A44CD8F
+                  - Fn::Select:
+                      - 1
+                      - Fn::Split:
+                          - "-"
+                          - Fn::Select:
+                              - 6
+                              - Fn::Split:
+                                  - ":"
+                                  - Ref: databasesecret6A44CD8F
+            - '","property":"username"}}]}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c81dc9637be2902af3c3263f9e8a1f5a3acbd73358
+    DependsOn:
+      - eksclusterchartexternalsecretshelmchart38CF5FEF
+      - eksclusterExternalSecretsServiceAccountConditionJsonD0F92524
+      - eksclusterExternalSecretsServiceAccountmanifestExternalSecretsServiceAccountServiceAccountResource03847A8F
+      - eksclusterExternalSecretsServiceAccountRoleF9CAE35A
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/BackstageDatabaseExternalSecret/Resource/Default
+  awsloadbalancercontrollerpolicy8F3837F3:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: iam:CreateServiceLinkedRole
+            Condition:
+              StringEquals:
+                iam:AWSServiceName: elasticloadbalancing.amazonaws.com
+            Effect: Allow
+            Resource: "*"
+          - Action:
+              - acm:DescribeCertificate
+              - acm:ListCertificates
+              - cognito-idp:DescribeUserPoolClient
+              - ec2:AuthorizeSecurityGroupIngress
+              - ec2:CreateSecurityGroup
+              - ec2:DescribeAccountAttributes
+              - ec2:DescribeAddresses
+              - ec2:DescribeAvailabilityZones
+              - ec2:DescribeCoipPools
+              - ec2:DescribeInstances
+              - ec2:DescribeInternetGateways
+              - ec2:DescribeNetworkInterfaces
+              - ec2:DescribeSecurityGroups
+              - ec2:DescribeSubnets
+              - ec2:DescribeTags
+              - ec2:DescribeVpcPeeringConnections
+              - ec2:DescribeVpcs
+              - ec2:GetCoipPoolUsage
+              - ec2:RevokeSecurityGroupIngress
+              - elasticloadbalancing:AddListenerCertificates
+              - elasticloadbalancing:CreateListener
+              - elasticloadbalancing:CreateRule
+              - elasticloadbalancing:DeleteListener
+              - elasticloadbalancing:DeleteRule
+              - elasticloadbalancing:DescribeListenerCertificates
+              - elasticloadbalancing:DescribeListeners
+              - elasticloadbalancing:DescribeLoadBalancerAttributes
+              - elasticloadbalancing:DescribeLoadBalancers
+              - elasticloadbalancing:DescribeRules
+              - elasticloadbalancing:DescribeSSLPolicies
+              - elasticloadbalancing:DescribeTags
+              - elasticloadbalancing:DescribeTargetGroupAttributes
+              - elasticloadbalancing:DescribeTargetGroups
+              - elasticloadbalancing:DescribeTargetHealth
+              - elasticloadbalancing:ModifyListener
+              - elasticloadbalancing:ModifyRule
+              - elasticloadbalancing:RemoveListenerCertificates
+              - elasticloadbalancing:SetWebAcl
+              - iam:GetServerCertificate
+              - iam:ListServerCertificates
+              - shield:CreateProtection
+              - shield:DeleteProtection
+              - shield:DescribeProtection
+              - shield:GetSubscriptionState
+              - waf-regional:AssociateWebACL
+              - waf-regional:DisassociateWebACL
+              - waf-regional:GetWebACL
+              - waf-regional:GetWebACLForResource
+              - wafv2:AssociateWebACL
+              - wafv2:DisassociateWebACL
+              - wafv2:GetWebACL
+              - wafv2:GetWebACLForResource
+            Effect: Allow
+            Resource: "*"
+          - Action: ec2:CreateTags
+            Condition:
+              StringEquals:
+                ec2:CreateAction: CreateSecurityGroup
+              "Null":
+                aws:RequestTag/elbv2.k8s.aws/cluster: "false"
+            Effect: Allow
+            Resource: arn:aws:ec2:*:*:security-group/*
+          - Action:
+              - ec2:CreateTags
+              - ec2:DeleteTags
+            Condition:
+              "Null":
+                aws:RequestTag/elbv2.k8s.aws/cluster: "true"
+                aws:ResourceTag/elbv2.k8s.aws/cluster: "false"
+            Effect: Allow
+            Resource: arn:aws:ec2:*:*:security-group/*
+          - Action:
+              - ec2:AuthorizeSecurityGroupIngress
+              - ec2:DeleteSecurityGroup
+              - ec2:RevokeSecurityGroupIngress
+              - elasticloadbalancing:DeleteLoadBalancer
+              - elasticloadbalancing:DeleteTargetGroup
+              - elasticloadbalancing:ModifyLoadBalancerAttributes
+              - elasticloadbalancing:ModifyTargetGroup
+              - elasticloadbalancing:ModifyTargetGroupAttributes
+              - elasticloadbalancing:SetIpAddressType
+              - elasticloadbalancing:SetSecurityGroups
+              - elasticloadbalancing:SetSubnets
+            Condition:
+              "Null":
+                aws:ResourceTag/elbv2.k8s.aws/cluster: "false"
+            Effect: Allow
+            Resource: "*"
+          - Action:
+              - elasticloadbalancing:CreateLoadBalancer
+              - elasticloadbalancing:CreateTargetGroup
+            Condition:
+              "Null":
+                aws:RequestTag/elbv2.k8s.aws/cluster: "false"
+            Effect: Allow
+            Resource: "*"
+          - Action:
+              - elasticloadbalancing:AddTags
+              - elasticloadbalancing:RemoveTags
+            Condition:
+              "Null":
+                aws:RequestTag/elbv2.k8s.aws/cluster: "true"
+                aws:ResourceTag/elbv2.k8s.aws/cluster: "false"
+            Effect: Allow
+            Resource:
+              - arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*
+              - arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*
+              - arn:aws:elasticloadbalancing:*:*:targetgroup/*/*
+          - Action:
+              - elasticloadbalancing:AddTags
+              - elasticloadbalancing:RemoveTags
+            Effect: Allow
+            Resource:
+              - arn:aws:elasticloadbalancing:*:*:listener-rule/app/*/*/*
+              - arn:aws:elasticloadbalancing:*:*:listener-rule/net/*/*/*
+              - arn:aws:elasticloadbalancing:*:*:listener/app/*/*/*
+              - arn:aws:elasticloadbalancing:*:*:listener/net/*/*/*
+          - Action: elasticloadbalancing:AddTags
+            Condition:
+              StringEquals:
+                elasticloadbalancing:CreateAction:
+                  - CreateTargetGroup
+                  - CreateLoadBalancer
+              "Null":
+                aws:RequestTag/elbv2.k8s.aws/cluster: "false"
+            Effect: Allow
+            Resource:
+              - arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*
+              - arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*
+              - arn:aws:elasticloadbalancing:*:*:targetgroup/*/*
+          - Action:
+              - elasticloadbalancing:DeregisterTargets
+              - elasticloadbalancing:RegisterTargets
+            Effect: Allow
+            Resource: arn:aws:elasticloadbalancing:*:*:targetgroup/*/*
+        Version: "2012-10-17"
+      PolicyName: AWSLoadBalancerControllerIAMPolicy
+      Roles:
+        - Ref: eksclusterawsloadbalancercontrollerRole5E4944FA
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/aws-load-balancer-controller-policy/Resource
+  crossplaneawspolicyD7162A0B:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - iam:*
+              - sts:*
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: crossplaneawspolicyD7162A0B
+      Roles:
+        - Ref: eksclustercrossplanecontrollersaRole478B6780
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/crossplane-aws-policy/Resource
+  backstagedbsecuritygroupADA70BD1:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: BackstageInfraStack/backstage-db-security-group
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp:
+            Fn::GetAtt:
+              - backstageVpc66223E50
+              - CidrBlock
+          Description: Connect from within VPC
+          FromPort: 5432
+          IpProtocol: tcp
+          ToPort: 5432
+      VpcId:
+        Ref: backstageVpc66223E50
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstage-db-security-group/Resource
+  parametergroupB8600DF8:
+    Type: AWS::RDS::DBClusterParameterGroup
+    Properties:
+      Description: Parameter group for Backstage
+      Family: aurora-postgresql15
+      Parameters:
+        rds.force_ssl: "0"
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/-parameter-group/Resource
+  backstagedatabaseinstanceSubnetsB52C80FC:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnets for backstage-database-instance database
+      SubnetIds:
+        - Ref: backstageVpcPrivateSubnetSubnet1Subnet80049FE4
+        - Ref: backstageVpcPrivateSubnetSubnet2Subnet7D386E97
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstage-database-instance/Subnets/Default
+  backstagedatabaseinstance563CB6E3:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      CopyTagsToSnapshot: true
+      DBClusterIdentifier: backstage
+      DBClusterParameterGroupName:
+        Ref: parametergroupB8600DF8
+      DBSubnetGroupName:
+        Ref: backstagedatabaseinstanceSubnetsB52C80FC
+      Engine: aurora-postgresql
+      EngineVersion: "15.4"
+      MasterUserPassword:
+        Fn::Join:
+          - ""
+          - - "{{resolve:secretsmanager:"
+            - Ref: databasesecret6A44CD8F
+            - :SecretString:password::}}
+      MasterUsername:
+        Fn::Join:
+          - ""
+          - - "{{resolve:secretsmanager:"
+            - Ref: databasesecret6A44CD8F
+            - :SecretString:username::}}
+      Port: 5432
+      VpcSecurityGroupIds:
+        - Fn::GetAtt:
+            - backstagedbsecuritygroupADA70BD1
+            - GroupId
+    UpdateReplacePolicy: Snapshot
+    DeletionPolicy: Snapshot
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstage-database-instance/Resource
+  backstagedatabaseinstancewriter39F3DCD2:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBClusterIdentifier:
+        Ref: backstagedatabaseinstance563CB6E3
+      DBInstanceClass: db.r6g.4xlarge
+      Engine: aurora-postgresql
+      PromotionTier: 0
+      PubliclyAccessible: false
+    DependsOn:
+      - backstageVpcPrivateSubnetSubnet1DefaultRouteCBFCAC3C
+      - backstageVpcPrivateSubnetSubnet1RouteTableAssociationD2B60A51
+      - backstageVpcPrivateSubnetSubnet2DefaultRouteE8D425EF
+      - backstageVpcPrivateSubnetSubnet2RouteTableAssociation478F1F96
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstage-database-instance/writer/Resource
+  backstageImageRepository450B0E2F:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: backstage
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/backstageImageRepository/Resource
+  BackstageNamespaceC306150F:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest: '[{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"backstage","labels":{"aws.cdk.eks/prune-c8f5678d5410842710ac5417751f380c4c6b2675b2":""}}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c8f5678d5410842710ac5417751f380c4c6b2675b2
+    DependsOn:
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/BackstageNamespace/Resource/Default
+  BackstageExternalSecretD295D476:
+    Type: Custom::AWSCDK-EKS-KubernetesResource
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B
+          - Outputs.BackstageInfraStackawscdkawseksKubectlProviderframeworkonEventB60D7D9FArn
+      Manifest:
+        Fn::Join:
+          - ""
+          - - '[{"apiVersion":"external-secrets.io/v1beta1","kind":"ExternalSecret","metadata":{"name":"external-backstage-secret","namespace":"backstage","labels":{"aws.cdk.eks/prune-c846a74edbf65d97515c5391ed4995d7fb5aa9c7b4":""}},"spec":{"secretStoreRef":{"name":"secret-manager-store","kind":"ClusterSecretStore"},"target":{"name":"backstage-secret"},"data":[{"secretKey":"GITHUB_TOKEN","remoteRef":{"key":"'
+            - Fn::Join:
+                - "-"
+                - - Fn::Select:
+                      - 0
+                      - Fn::Split:
+                          - "-"
+                          - Fn::Select:
+                              - 6
+                              - Fn::Split:
+                                  - ":"
+                                  - Ref: backstagesecret2FBFAFD8
+                  - Fn::Select:
+                      - 1
+                      - Fn::Split:
+                          - "-"
+                          - Fn::Select:
+                              - 6
+                              - Fn::Split:
+                                  - ":"
+                                  - Ref: backstagesecret2FBFAFD8
+            - '","property":"githubToken"}},{"secretKey":"BACKSTAGE_ACM_ARN","remoteRef":{"key":"'
+            - Fn::Join:
+                - "-"
+                - - Fn::Select:
+                      - 0
+                      - Fn::Split:
+                          - "-"
+                          - Fn::Select:
+                              - 6
+                              - Fn::Split:
+                                  - ":"
+                                  - Ref: backstagesecret2FBFAFD8
+                  - Fn::Select:
+                      - 1
+                      - Fn::Split:
+                          - "-"
+                          - Fn::Select:
+                              - 6
+                              - Fn::Split:
+                                  - ":"
+                                  - Ref: backstagesecret2FBFAFD8
+            - '","property":"backstageAcmArn"}},{"secretKey":"ARGOCD_ACM_ARN","remoteRef":{"key":"'
+            - Fn::Join:
+                - "-"
+                - - Fn::Select:
+                      - 0
+                      - Fn::Split:
+                          - "-"
+                          - Fn::Select:
+                              - 6
+                              - Fn::Split:
+                                  - ":"
+                                  - Ref: backstagesecret2FBFAFD8
+                  - Fn::Select:
+                      - 1
+                      - Fn::Split:
+                          - "-"
+                          - Fn::Select:
+                              - 6
+                              - Fn::Split:
+                                  - ":"
+                                  - Ref: backstagesecret2FBFAFD8
+            - '","property":"argocdAcmArn"}}]}}]'
+      ClusterName:
+        Ref: ekscluster92983EFB
+      RoleArn:
+        Fn::GetAtt:
+          - eksclusterCreationRole183DA047
+          - Arn
+      PruneLabel: aws.cdk.eks/prune-c846a74edbf65d97515c5391ed4995d7fb5aa9c7b4
+    DependsOn:
+      - eksclusterchartexternalsecretshelmchart38CF5FEF
+      - eksclusterExternalSecretsServiceAccountConditionJsonD0F92524
+      - eksclusterExternalSecretsServiceAccountmanifestExternalSecretsServiceAccountServiceAccountResource03847A8F
+      - eksclusterExternalSecretsServiceAccountRoleF9CAE35A
+      - eksclusterKubectlReadyBarrier2A406583
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/BackstageExternalSecret/Resource/Default
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAA/31TwW7bMAz9lt4VNXUvOc5xhy7r1hpxkGtBy4yjxpYMkUoQGP73wXIct9mwE/keKYl8pCLZPkQLOb+DE81UcZhVOpdtxqAOAk703qKKZLttlEh2ZpsmIvV5pVXmc4Pcc5O3tp5xA3mFEz9xMZFVGlhbc03une+rtDevwM/AeIKzSJ0+AuN08cowOoPXhKGSC4qZQe1rNCwyVN5pPj8765tQw3+JlSkdEolf4I3ab7BuKhhq+sp0QkMt27UdGgs2tZVWoZLJWxliMApTZ3e6wk7Q4zsQIZOMeyPoUS69OiAvgVBUUOcFyPDcGd0WHfXa4IFkm1SeGJ2ITxR73osXnwcFkH6D0TskFq+2wHLsawJvDZpVkVhjUHHq7FEX6ESG7qgVxkpZb1j8wKpO9uCCunFRWNMJ8GxJQaVNKdvYs80GcNXulusEoXLIVIOBEp1ss4AvOvfeYDbgSuRPc7om3EY64QqSbQoOamR017eflhdFbkJPwJAD4ajXsDOfjv1FjJkBjBPrBCon2zU2ljRbF8Y5oa4TayTrnUKReGJbT7DP+2do1D7MOsw/Yyi1KfsziTWFHr/Cm+fGB1V+0sAM369frrHdTkRyfvft8knvh92ZVf3izA4+R8XV7Bgt5Mvgb6NFWKpOGFug/KD7YzSXD3M5v/sgrWfOG9Y1yvVg/wAispf4BQQAAA==
+    Metadata:
+      aws:cdk:path: BackstageInfraStack/CDKMetadata/Default
+    Condition: CDKMetadataAvailable
+Conditions:
+  eksclusterHasEcrPublic577EBB4A:
+    Fn::Equals:
+      - Ref: AWS::Partition
+      - aws
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - af-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - il-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-2
+Outputs:
+  eksclusterConfigCommand515C0544:
+    Value:
+      Fn::Join:
+        - ""
+        - - "aws eks update-kubeconfig --name "
+          - Ref: ekscluster92983EFB
+          - " --region "
+          - Ref: AWS::Region
+          - " --role-arn "
+          - Fn::GetAtt:
+              - adminroleF78B7FDC
+              - Arn
+  eksclusterGetTokenCommand3C33A2A5:
+    Value:
+      Fn::Join:
+        - ""
+        - - "aws eks get-token --cluster-name "
+          - Ref: ekscluster92983EFB
+          - " --region "
+          - Ref: AWS::Region
+          - " --role-arn "
+          - Fn::GetAtt:
+              - adminroleF78B7FDC
+              - Arn
+  AuroraPostgresEndpoint:
+    Value:
+      Fn::GetAtt:
+        - backstagedatabaseinstance563CB6E3
+        - Endpoint.Address
+  EksClusterArn:
+    Value:
+      Fn::GetAtt:
+        - ekscluster92983EFB
+        - Arn
+  EksClusterKubectlRoleArn:
+    Value:
+      Fn::GetAtt:
+        - adminroleF78B7FDC
+        - Arn
+  EcrRepositoryUri:
+    Value:
+      Fn::Join:
+        - ""
+        - - Fn::Select:
+              - 4
+              - Fn::Split:
+                  - ":"
+                  - Fn::GetAtt:
+                      - backstageImageRepository450B0E2F
+                      - Arn
+          - .dkr.ecr.
+          - Fn::Select:
+              - 3
+              - Fn::Split:
+                  - ":"
+                  - Fn::GetAtt:
+                      - backstageImageRepository450B0E2F
+                      - Arn
+          - "."
+          - Ref: AWS::URLSuffix
+          - /
+          - Ref: backstageImageRepository450B0E2F
+Parameters:
+  SsmParameterValueawsserviceeksoptimizedami128amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /aws/service/eks/optimized-ami/1.28/amazon-linux-2/recommended/image_id
+  BootstrapVersion:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /cdk-bootstrap/hnb659fds/version
+    Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
+Rules:
+  CheckBootstrapVersion:
+    Assertions:
+      - Assert:
+          Fn::Not:
+            - Fn::Contains:
+                - - "1"
+                  - "2"
+                  - "3"
+                  - "4"
+                  - "5"
+                - Ref: BootstrapVersion
+        AssertDescription: CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.
+

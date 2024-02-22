@@ -10,7 +10,7 @@ const backstageInfra = new BackstageInfra(app, 'BackstageInfraStack', {
     cluster_name: 'backstage',
     database_username: 'postgres',
     database_port: 5432,
-    repositoryName: 'demobackstage',
+    repository_name: 'backstage',
     namespace: 'backstage',
     cluster_database_secret_name: 'backstage-database-secret',
     backstage_secret_name: 'backstage-secret',
@@ -19,11 +19,12 @@ const backstageInfra = new BackstageInfra(app, 'BackstageInfraStack', {
     github_token: process.env.GITHUB_TOKEN as string
 });
 
-const backstage = new Backstage(app, 'BackstageAppStack', {
-    cluster: backstageInfra.cluster,
-    db: backstageInfra.db,
-    backstageImageRepository: backstageInfra.backstageImageRepository,
+new Backstage(app, 'BackstageAppStack', {
+    cluster_name: 'backstage',
+    repository_name: 'backstage',
     backstage_acm_arn: process.env.BACKSTAGE_ACM_ARN as string,
     cluster_database_secret_name: 'backstage-database-secret',
     backstage_secret_name: process.env.BACKSTAGE_ACM_ARN as string
 });
+
+app.synth();

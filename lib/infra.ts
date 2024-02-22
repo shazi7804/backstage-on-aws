@@ -14,7 +14,7 @@ export interface BackstageInfraProps extends cdk.StackProps {
     readonly cluster_name: string,
     readonly database_username: string
     readonly database_port: number,
-    readonly repositoryName: string,
+    readonly repository_name: string,
     readonly namespace: string,
     readonly cluster_database_secret_name: string,
     readonly backstage_secret_name: string,
@@ -32,10 +32,6 @@ export class BackstageInfra extends cdk.Stack {
 
     constructor(scope: Construct, id: string, props: BackstageInfraProps) {
         super(scope, id, props);
-
-        const commonProps = {
-
-        }
 
         const subnetProps = [
             {
@@ -513,6 +509,7 @@ export class BackstageInfra extends cdk.Stack {
 
         this.db = new rds.DatabaseCluster(this, "backstage-database-instance", {
             engine,
+            clusterIdentifier: 'backstage',
             vpc,
             vpcSubnets: {
                 subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
@@ -526,7 +523,7 @@ export class BackstageInfra extends cdk.Stack {
         });
 
         this.backstageImageRepository = new ecr.Repository(this, "backstageImageRepository", {
-            repositoryName: props.repositoryName
+            repositoryName: props.repository_name
         });
 
         const backstageNamespace = new eks.KubernetesManifest(this.cluster.stack, "BackstageNamespace", {
@@ -604,6 +601,9 @@ export class BackstageInfra extends cdk.Stack {
 
 
         // Output
+        new cdk.CfnOutput(this, 'AuroraPostgresEndpoint', { value: this.db.clusterEndpoint.hostname});
+        new cdk.CfnOutput(this, 'EksClusterArn', { value: this.cluster.clusterArn });
+        new cdk.CfnOutput(this, 'EksClusterKubectlRoleArn', { value: mastersRole.roleArn });
         new cdk.CfnOutput(this, 'EcrRepositoryUri', { value: this.backstageImageRepository.repositoryUri });
     }
 }
