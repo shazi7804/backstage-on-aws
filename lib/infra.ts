@@ -20,8 +20,8 @@ export interface BackstageInfraProps extends cdk.StackProps {
     readonly backstage_secret_name: string,
     readonly backstage_acm_arn: string,
     readonly argocd_acm_arn: string,
-    // readonly github_client_id: process.env.AUTH_GITHUB_CLIENT_ID as string,
-    // readonly github_client_secret: process.env.AUTH_GITHUB_CLIENT_SECRET as string,
+    readonly auth_github_client_id: string,
+    readonly auth_github_client_secret: string,
     readonly github_token: string
 }
 
@@ -87,8 +87,8 @@ export class BackstageInfra extends cdk.Stack {
         const backstageSecret = new secretm.Secret(this, "backstage-secret", {
             secretObjectValue: {
                 githubToken: cdk.SecretValue.unsafePlainText(props.github_token),
-                // githubClientId: cdk.SecretValue.unsafePlainText(commonProps.github_client_id),
-                // githubClientSecret: cdk.SecretValue.unsafePlainText(commonProps.github_client_secret),
+                authGithubClientId: cdk.SecretValue.unsafePlainText(props.auth_github_client_id),
+                authGithubClientSecret: cdk.SecretValue.unsafePlainText(props.auth_github_client_secret),
                 backstageAcmArn: cdk.SecretValue.unsafePlainText(props.backstage_acm_arn),
                 argocdAcmArn: cdk.SecretValue.unsafePlainText(props.argocd_acm_arn),
             }
@@ -580,20 +580,20 @@ export class BackstageInfra extends cdk.Stack {
                                     property:  "githubToken"
                                 }
                             },
-                            // {
-                            //     secretKey: "AUTH_GITHUB_CLIENT_ID",
-                            //     remoteRef: {
-                            //         key: backstageSecret.secretName,
-                            //         property:  "githubClientId"
-                            //     }
-                            // },
-                            // {
-                            //     secretKey: "AUTH_GITHUB_CLIENT_SECRET",
-                            //     remoteRef: {
-                            //         key: backstageSecret.secretName,
-                            //         property:  "githubClientSecret"
-                            //     }
-                            // },
+                            {
+                                secretKey: "AUTH_GITHUB_CLIENT_ID",
+                                remoteRef: {
+                                    key: backstageSecret.secretName,
+                                    property:  "authGithubClientId"
+                                }
+                            },
+                            {
+                                secretKey: "AUTH_GITHUB_CLIENT_SECRET",
+                                remoteRef: {
+                                    key: backstageSecret.secretName,
+                                    property:  "authGithubClientSecret"
+                                }
+                            },
                             {
                                 secretKey: "BACKSTAGE_ACM_ARN",
                                 remoteRef: {
@@ -616,72 +616,72 @@ export class BackstageInfra extends cdk.Stack {
         backstageExternalSecret.node.addDependency(externalSecretsHelmChart);
         backstageExternalSecret.node.addDependency(externalSecretsServiceAccount);
 
-        // const backstageHelmChartAddOn = this.cluster.addHelmChart('backstage-helmchart', {
-        //     chart: 'backstage',
-        //     namespace: 'backstage',
-        //     release: 'backstage',
-        //     version: '1.8.2',
-        //     repository: 'https://backstage.github.io/charts',
-        //     wait: true,
-        //     timeout: cdk.Duration.minutes(15),
-        //     values: {
-        //         "ingress": {
-        //             "enabled": true,
-        //             "className": "alb",
-        //             // "host"
-        //             "annotations": {
-        //                 "alb.ingress.kubernetes.io/scheme": "internet-facing",
-        //                 "alb.ingress.kubernetes.io/target-type": "ip",
-        //                 "alb.ingress.kubernetes.io/certificate-arn": props.backstage_acm_arn
-        //             }
-        //         },
-        //         "backstage": {
-        //             "image": {
-        //                 "registry": this.account + '.dkr.ecr.' + this.region + '.amazonaws.com',
-        //                 "repository": props.repository_name,
-        //                 "tag": 'latest'
-        //             },
-        //             "appConfig": {
-        //                 "app": { 
-        //                     "baseUrl": 'http://localhost'
-        //                 },
-        //                 "backend": {
-        //                     "baseUrl": 'http://localhost',
-        //                     "database": {
-        //                         "client": "pg",
-        //                         "connection": {
-        //                             "host": this.db.clusterEndpoint.hostname,
-        //                             "port": this.db.clusterEndpoint.port,
-        //                             "user": "${POSTGRES_USER}",
-        //                             "password": "${POSTGRES_PASSWORD}"
-        //                         }
-        //                     }
-        //                 },
-        //                 "auth": {
-        //                     "providers": {
-        //                         "github": {
-        //                             "development": {
-        //                                 "clientId": "${AUTH_GITHUB_CLIENT_ID}",
-        //                                 "clientSecret": "${AUTH_GITHUB_CLIENT_SECRET}"
-        //                             }
-        //                         }
-        //                     }
-        //                 },
-        //                 "integrations": {
-        //                     "github": [{
-        //                         "host": "github.com",
-        //                         "token": "${GITHUB_TOKEN}"
-        //                     }]
-        //                 }
-        //             },
-        //             "extraEnvVarsSecrets": [
-        //                 props.cluster_database_secret_name,
-        //                 props.backstage_secret_name
-        //             ],
-        //             "command": ["node", "packages/backend", "--config", "app-config.yaml"]
-        //         }
-        //     }
-        // })
+        const backstageHelmChartAddOn = this.cluster.addHelmChart('backstage-helmchart', {
+            chart: 'backstage',
+            namespace: 'backstage',
+            release: 'backstage',
+            version: '1.8.2',
+            repository: 'https://backstage.github.io/charts',
+            wait: true,
+            timeout: cdk.Duration.minutes(15),
+            values: {
+                "ingress": {
+                    "enabled": true,
+                    "className": "alb",
+                    // "host"
+                    "annotations": {
+                        "alb.ingress.kubernetes.io/scheme": "internet-facing",
+                        "alb.ingress.kubernetes.io/target-type": "ip",
+                        "alb.ingress.kubernetes.io/certificate-arn": props.backstage_acm_arn
+                    }
+                },
+                "backstage": {
+                    "image": {
+                        "registry": this.account + '.dkr.ecr.' + this.region + '.amazonaws.com',
+                        "repository": props.repository_name,
+                        "tag": 'latest'
+                    },
+                    "appConfig": {
+                        "app": { 
+                            "baseUrl": 'http://localhost'
+                        },
+                        "backend": {
+                            "baseUrl": 'http://localhost',
+                            "database": {
+                                "client": "pg",
+                                "connection": {
+                                    "host": this.db.clusterEndpoint.hostname,
+                                    "port": this.db.clusterEndpoint.port,
+                                    "user": "${POSTGRES_USER}",
+                                    "password": "${POSTGRES_PASSWORD}"
+                                }
+                            }
+                        },
+                        "auth": {
+                            "providers": {
+                                "github": {
+                                    "development": {
+                                        "clientId": "${AUTH_GITHUB_CLIENT_ID}",
+                                        "clientSecret": "${AUTH_GITHUB_CLIENT_SECRET}"
+                                    }
+                                }
+                            }
+                        },
+                        "integrations": {
+                            "github": [{
+                                "host": "github.com",
+                                "token": "${GITHUB_TOKEN}"
+                            }]
+                        }
+                    },
+                    "extraEnvVarsSecrets": [
+                        props.cluster_database_secret_name,
+                        props.backstage_secret_name
+                    ],
+                    "command": ["node", "packages/backend", "--config", "app-config.yaml"]
+                }
+            }
+        })
 
 
         // Output

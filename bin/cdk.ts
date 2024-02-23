@@ -16,15 +16,9 @@ const backstageInfra = new BackstageInfra(app, 'BackstageInfraStack', {
     backstage_secret_name: 'backstage-secret',
     backstage_acm_arn: process.env.BACKSTAGE_ACM_ARN as string,
     argocd_acm_arn: process.env.ARGOCD_ACM_ARN as string,
-    github_token: process.env.GITHUB_TOKEN as string
+    github_token: process.env.GITHUB_TOKEN as string,
+    auth_github_client_id: process.env.AUTH_GITHUB_CLIENT_ID as string,
+    auth_github_client_secret: process.env.AUTH_GITHUB_CLIENT_SECRET as string,
 });
-
-// new Backstage(app, 'BackstageAppStack', {
-//     cluster_name: 'backstage',
-//     repository_name: 'backstage',
-//     backstage_acm_arn: process.env.BACKSTAGE_ACM_ARN as string,
-//     cluster_database_secret_name: 'backstage-database-secret',
-//     backstage_secret_name: process.env.BACKSTAGE_ACM_ARN as string
-// });
 
 app.synth();

@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Group
 metadata:
-  name: developers
-  title: Developers Team
+  name: developer
+  title: Developer Team
   description: The developer unit
 spec:
   type: developer

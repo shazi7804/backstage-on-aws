@@ -37,23 +37,6 @@ backend:
 #           caData: ${K8S_CA_DATA}
 #           authMetadata:
 #             kubernetes.io/x-k8s-aws-id: demo-blueprint
-# aws:
-#   mainAccount:
-#   accounts:
-#     - accountId: ${AWS_ACCOUNT_ID}
-#       accessKeyId: ${AWS_ACCESS_KEY_ID}
-#       secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
-#
-# auth:
-#   providers:
-#     github:
-#       development:
-#         clientId: ${AUTH_GITHUB_CLIENT_ID}
-#         clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
-integrations:
-  github:
-    - host: github.com
-      token: ${GITHUB_TOKEN}
 
 costInsights:
   engineerCost: 200000
