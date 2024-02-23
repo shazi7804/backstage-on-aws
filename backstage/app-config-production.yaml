@@ -25,6 +25,16 @@ backend:
       - host: github.com
       - host: localhost
 
+auth:
+  providers:
+    github:
+      development:
+        clientId: "${AUTH_GITHUB_CLIENT_ID}"
+        clientSecret: "${AUTH_GITHUB_CLIENT_SECRET}"
+integrations:
+  github:
+    - host: "github.com"
+      token: "${GITHUB_TOKEN}"
 # kubernetes:
 #   serviceLocatorMethod:
 #     type: 'multiTenant'
@@ -82,6 +92,4 @@ catalog:
       target: examples/org.yaml
       rules:
         - allow: [User, Group]
-    - type: url
-      target: https://github.com/shazi7804/backstage-on-aws/blob/main/catalog-info.yaml
 

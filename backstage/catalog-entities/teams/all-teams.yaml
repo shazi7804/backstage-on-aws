@@ -5,7 +5,6 @@ metadata:
     description: Approved users and teams for Backstage
 spec:
     targets:
-        - ./users/scottliao.yaml
         - ./groups/admin.yaml
         - ./groups/sre.yaml
         - ./groups/developer.yaml

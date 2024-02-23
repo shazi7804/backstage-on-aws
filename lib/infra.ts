@@ -428,6 +428,9 @@ export class BackstageInfra extends cdk.Stack {
             release: "argocd",
             namespace: "argocd",
             values: {
+                global: {
+                    domain: ""
+                },
                 server: {
                     ingress: {
                         enabled: true,
@@ -441,8 +444,8 @@ export class BackstageInfra extends cdk.Stack {
                             // Needed when using TLS.
                             "alb.ingress.kubernetes.io/backend-protocol": "HTTPS",
                             "alb.ingress.kubernetes.io/healthcheck-protocol": "HTTPS",
-                            // "alb.ingress.kubernetes.io/listen-ports": '[{"HTTP":80}, {"HTTPS":443}]'
-                            "alb.ingress.kubernetes.io/listen-ports": '[{"HTTPS":443}]',
+                            "alb.ingress.kubernetes.io/listen-ports": '[{"HTTP":80}, {"HTTPS":443}]',
+                            "alb.ingress.kubernetes.io/actions.ssl-redirect": '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}',
                             "alb.ingress.kubernetes.io/certificate-arn": props.argocd_acm_arn
                         },
                         paths: ["/"]

@@ -1,0 +1,44 @@
+apiVersion: v1
+data:
+  app-config.yaml: |
+    app:
+      baseUrl: https://k8s-backstag-backstag-d6a8fd4da3-1127228658.us-east-1.elb.amazonaws.com
+    auth:
+      providers:
+        github:
+          development:
+            clientId: ${AUTH_GITHUB_CLIENT_ID}
+            clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+    backend:
+      baseUrl: https://k8s-backstag-backstag-d6a8fd4da3-1127228658.us-east-1.elb.amazonaws.com
+      database:
+        client: pg
+        connection:
+          host: backstage.cluster-c96qoeqo2nat.us-east-1.rds.amazonaws.com
+          password: ${POSTGRES_PASSWORD}
+          port: 5432
+          user: ${POSTGRES_USER}
+    integrations:
+      github:
+      - host: github.com
+        token: ${GITHUB_TOKEN}
+    proxy:
+      '/argocd/api':
+        target: https://k8s-argo-0fc1aa7b7d-1706750496.us-east-1.elb.amazonaws.com/api/v1/
+        changeOrigin: true
+        secure: false
+        headers:
+          Cookie:
+            $env: 'ARGOCD_AUTH_TOKEN'
+kind: ConfigMap
+metadata:
+  annotations:
+    meta.helm.sh/release-name: backstage
+    meta.helm.sh/release-namespace: backstage
+  creationTimestamp: "2024-02-23T15:50:14Z"
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: backstage-app-config
+  namespace: backstage
+  resourceVersion: "7331"
+  uid: 83bd8dcd-9ece-49e2-9d2a-af690356d940

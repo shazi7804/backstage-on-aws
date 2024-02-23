@@ -118,10 +118,6 @@ Common Name (e.g. server FQDN or YOUR name) []: argocd.local
 
 ### Backstage Setup
 
-
-
-
-
 ```
 > git clone https://github.com/shazi7804/backstage-on-aws/
 > cd backstage-on-aws/
@@ -136,9 +132,93 @@ export AUTH_GITHUB_CLIENT_SECRET=xxx
 > chmod +x setup.sh && ./setup.sh
 ```
 
-
+```
 > cdk deploy BackstageInfraStack
 Do you wish to deploy these changes (y/n)? y
 ```
 
+## Configuration
 
+Get AWS CLI credential from `Workshop studio` and paste to Cloud9 environment.
+
+- Configuration your new domain for backstage
+```
+> aws eks update-kubeconfig --name backstage --region ${AWS_REGION} --role-arn arn:aws:iam::01234567:role/...
+> kubectl edit cm/backstage-app-config -n backstage
+
+data:
+  app-config.yaml: |
+    app:
+      baseUrl: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
+    backend:
+      baseUrl: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
+
+> kubectl rollout restart deployment/backstage -n backstage
+```
+
+- Configuration your new domain for Github OAuth callback 
+```
+Authorization callback URL: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com/api/auth/github/handler/frame
+```
+
+
+
+## ArgoCD Configuration
+
+- Decrypt password and login argocd
+
+```
+> kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+> argocd login k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
+```
+
+- Add Amazon EKS cluster to register ArgoCD
+
+```
+> CONTEXT_NAME=$(kubectl config view -o jsonpath='{.current-context}')
+> argocd cluster add $CONTEXT_NAME
+```
+
+### Add backstage account to Argo CD via configmap
+
+1. Get the configmap argocd-cm of Argo CD by executing the below command.
+
+```
+> kubectl get configmap argocd-cm -n argocd -o yaml > argocd-cm.yml
+```
+
+2. Edit the configmap file argocd-cm.yml and add the below line under **"data"** with **new account** which has **API Key** and **login**.
+
+```
+data:
+  accounts.backstage: apiKey
+```
+
+3. Apply the configmap by executing the below command . This will add a new account and allow that account to process an API key as well as login via the Command Line Interface and Graphical User Interface.
+
+```
+> kubectl apply -f argocd-cm.yml -n argocd
+```
+
+### Generate Token for Backstage integrate
+
+```
+> argocd account generate-token --account backstage
+```
+
+```
+kubectl get configmap backstage-app-config -n backstage -o yaml > backstage-app-config.yml
+```
+
+```
+data:
+  app-config.yaml: |
+    proxy:
+    '/argocd/api':
+        target: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com/api/v1/
+        changeOrigin: true
+        secure: false
+        headers:
+        Cookie:
+            $env: 'ARGOCD_AUTH_TOKEN'
+```

@@ -1,4 +1,15 @@
 apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: scottliao
+spec:
+  profile:
+    displayName: Scott Liao
+    email: shazi7804@gmail.com
+    picture: https://avatars.githubusercontent.com/u/11752318?s=400&u=c2d507f870175803467a107c4587374effd779e2&v=4
+  memberOf: [admin]
+---
+apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: backstage
@@ -24,10 +35,9 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: admin
+  owner: scottliao
   system: backstage-infra
   dependsOn: ['backstage-nginx']
-  children: ['developer']
 ---
 apiVersion: backstage.io/v1alpha1
 kind: System
@@ -38,8 +48,19 @@ metadata:
     endoflife.date/products: nodejs@18
 spec:
   lifecycle: production
-  owner: sre
-  domain: backstage.demo
+  owner: scottliao
+  domain: backstage.demo.shazi.info
+---
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: backstage.demo.shazi.info
+  description: Landing page for backstage.demo.shazi.info
+  links:
+    - url: https://backstage.demo.shazi.info
+      title: Landing page
+spec:
+  owner: scottliao
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component
@@ -51,4 +72,4 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: sre
+  owner: scottliao

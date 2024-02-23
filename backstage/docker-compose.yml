@@ -14,6 +14,13 @@ services:
       - proxy
     image: backstage
     env_file: .env
+    command:
+      - "node"
+      - "packages/backend"
+      - "--config"
+      - "app-config.yaml"
+      - "--config"
+      - "app-config-production.yaml"
     ports:
       - "7007:7007"
     restart: always
