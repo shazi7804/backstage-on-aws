@@ -201,7 +201,7 @@ const overviewContent = (
     </EntitySwitch>
     <EntitySwitch>
       <EntitySwitch.Case if={e => Boolean(isArgocdAvailable(e))}>
-        <Grid item sm={4}>
+        <Grid item sm={6}>
           <EntityArgoCDOverviewCard />
         </Grid>
       </EntitySwitch.Case>
