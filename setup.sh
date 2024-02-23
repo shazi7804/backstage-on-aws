@@ -1,15 +1,21 @@
 #!/bin/bash
+
+## Need to input
 export AWS_REGION=your-region
 export AWS_ACCOUNT=your-account-id
 export GITHUB_TOKEN=your-github-token
 export AUTH_GITHUB_CLIENT_ID=your-github-auth-app-client-id
 export AUTH_GITHUB_CLIENT_SECRET=your-github-auth-app-client-secret
+export ARGOCD_ACM_ARN="arn:aws:acm:..."
+export BACKSTAGE_ACM_ARN="arn:aws:acm:..."
+
+##
 export ECR_REPO_NAME=backstage
 export ECR_REPO_URI="${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:latest"
 
 # Toolkit setup
 ## Install AWS CDK and YARN
-npm install -g aws-cdk yarn
+npm install -g aws-cdk@latest yarn --force
 cdk --version
 
 ## Install Kubectl
@@ -27,8 +33,6 @@ argocd version
 
 
 # Build Backstage infra and application
-git clone https://github.com/shazi7804/backstage-on-aws
-
 ## Application
 
 cd backstage/ && yarn install
@@ -41,15 +45,11 @@ aws ecr create-repository \
     --region $AWS_REGION
 
 DOCKER_BUILDKIT=1 docker build . -t backstage
-docker tag backstage $ECR_REPO
-docker buildx build \
-    --platform linux/amd64,linux/arm64 \
-    --push \
-    --tag $ECR_REPO \
-    .
+docker tag backstage $ECR_REPO_URI
+docker push $ECR_REPO_URI
 
 ## Infra deploy
-cd ../../ && yarn install
-cdk bootstrap
-cdk deploy BackstageInfraStack
+cd ../ && yarn install
+cdk bootstrap aws://${AWS_ACCOUNT}/${AWS_REGION}
+npx cdk deploy BackstageInfraStack --require-approval never
 

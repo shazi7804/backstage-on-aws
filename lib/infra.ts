@@ -470,44 +470,44 @@ export class BackstageInfra extends cdk.Stack {
         });
 
 
-        const argoRolloutsNamespaceName = "argocd-rollouts"
-        const argoRolloutsNamespace = this.cluster.addManifest('argo-rollouts-namespace', {
-            apiVersion: 'v1',
-            kind: 'Namespace',
-            metadata: {
-                name: argoRolloutsNamespaceName
-            }
-        });
+        // const argoRolloutsNamespaceName = "argocd-rollouts"
+        // const argoRolloutsNamespace = this.cluster.addManifest('argo-rollouts-namespace', {
+        //     apiVersion: 'v1',
+        //     kind: 'Namespace',
+        //     metadata: {
+        //         name: argoRolloutsNamespaceName
+        //     }
+        // });
 
-        const argoRolloutsHelmChartAddOn = this.cluster.addHelmChart('argo-rollouts-helm-chart', {
-            repository: "https://argoproj.github.io/argo-helm",
-            chart: "argo-rollouts",
-            release: "argo-rollouts",
-            namespace: argoRolloutsNamespaceName,
-            // https://artifacthub.io/packages/helm/argo/argo-rollouts
-            values: {
-                installCRDs: true,
-                dashboard: {
-                    enabled: true,
-                    ingress: {
-                        enabled: true,
-                        annotations: {
-                            // Ingress core settings.
-                            "kubernetes.io/ingress.class": "alb",
-                            "alb.ingress.kubernetes.io/scheme": "internet-facing",
-                            "alb.ingress.kubernetes.io/target-type": "ip",
-                            "alb.ingress.kubernetes.io/target-group-attributes": "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60",
-                            "alb.ingress.kubernetes.io/success-codes": "200,404,301,302",
-                            "alb.ingress.kubernetes.io/group.name": "argo",
-                            "alb.ingress.kubernetes.io/group.order": "2"
-                        },
-                        paths: ["/rollouts"]
-                    }
-                },
-            }
-        });
-        argoRolloutsHelmChartAddOn.node.addDependency(argoRolloutsNamespace)
-        argoRolloutsHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart)
+        // const argoRolloutsHelmChartAddOn = this.cluster.addHelmChart('argo-rollouts-helm-chart', {
+        //     repository: "https://argoproj.github.io/argo-helm",
+        //     chart: "argo-rollouts",
+        //     release: "argo-rollouts",
+        //     namespace: argoRolloutsNamespaceName,
+        //     // https://artifacthub.io/packages/helm/argo/argo-rollouts
+        //     values: {
+        //         installCRDs: true,
+        //         dashboard: {
+        //             enabled: true,
+        //             ingress: {
+        //                 enabled: true,
+        //                 annotations: {
+        //                     // Ingress core settings.
+        //                     "kubernetes.io/ingress.class": "alb",
+        //                     "alb.ingress.kubernetes.io/scheme": "internet-facing",
+        //                     "alb.ingress.kubernetes.io/target-type": "ip",
+        //                     "alb.ingress.kubernetes.io/target-group-attributes": "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60",
+        //                     "alb.ingress.kubernetes.io/success-codes": "200,404,301,302",
+        //                     "alb.ingress.kubernetes.io/group.name": "argo",
+        //                     "alb.ingress.kubernetes.io/group.order": "2"
+        //                 },
+        //                 paths: ["/rollouts"]
+        //             }
+        //         },
+        //     }
+        // });
+        // argoRolloutsHelmChartAddOn.node.addDependency(argoRolloutsNamespace)
+        // argoRolloutsHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart)
 
         const databaseSecurityGroup = new ec2.SecurityGroup(this, "backstage-db-security-group", {
             vpc: vpc
@@ -538,10 +538,6 @@ export class BackstageInfra extends cdk.Stack {
                 instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE4),
             }),
         });
-
-        // this.backstageImageRepository = new ecr.Repository(this, "backstageImageRepository", {
-        //     repositoryName: props.repository_name
-        // });
 
         const backstageNamespace = new eks.KubernetesManifest(this.cluster.stack, "BackstageNamespace", {
             cluster: this.cluster,
@@ -681,7 +677,11 @@ export class BackstageInfra extends cdk.Stack {
                     "command": ["node", "packages/backend", "--config", "app-config.yaml"]
                 }
             }
-        })
+        });
+        backstageHelmChartAddOn.node.addDependency(backstageExternalSecret);
+        backstageHelmChartAddOn.node.addDependency(backstageNamespace);
+        backstageHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart);
+        backstageHelmChartAddOn.node.addDependency(this.db);
 
 
         // Output
