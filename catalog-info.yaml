@@ -10,6 +10,41 @@ spec:
   memberOf: [admin]
 ---
 apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: backstage.demo.shazi.info
+  description: Landing page for backstage.demo.shazi.info
+  links:
+    - url: https://backstage.demo.shazi.info
+      title: Landing page
+spec:
+  owner: scottliao
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: backstage-infra
+  annotations:
+    github.com/project-slug: shazi7804/backstage-on-aws
+    endoflife.date/products: nodejs@18
+spec:
+  lifecycle: production
+  owner: scottliao
+  domain: backstage.demo.shazi.info
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-nginx
+  annotations:
+    github.com/project-slug: shazi7804/backstage-on-aws
+    endoflife.date/products: nginx
+spec:
+  type: service
+  lifecycle: production
+  owner: scottliao
+---
+apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: backstage
@@ -38,38 +73,3 @@ spec:
   owner: scottliao
   system: backstage-infra
   dependsOn: ['backstage-nginx']
----
-apiVersion: backstage.io/v1alpha1
-kind: System
-metadata:
-  name: backstage-infra
-  annotations:
-    github.com/project-slug: shazi7804/backstage-on-aws
-    endoflife.date/products: nodejs@18
-spec:
-  lifecycle: production
-  owner: scottliao
-  domain: backstage.demo.shazi.info
----
-apiVersion: backstage.io/v1alpha1
-kind: Domain
-metadata:
-  name: backstage.demo.shazi.info
-  description: Landing page for backstage.demo.shazi.info
-  links:
-    - url: https://backstage.demo.shazi.info
-      title: Landing page
-spec:
-  owner: scottliao
----
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  name: backstage-nginx
-  annotations:
-    github.com/project-slug: shazi7804/backstage-on-aws
-    endoflife.date/products: nginx
-spec:
-  type: service
-  lifecycle: production
-  owner: scottliao

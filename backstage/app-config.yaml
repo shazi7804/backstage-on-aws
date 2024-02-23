@@ -64,6 +64,8 @@ catalog:
   import:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
+  rules:
+      - allow: [Component, Domain, System, API, Resource, Location, Template, User, Group]
   locations:
     - type: file
       target: all-catalogs.yaml
@@ -84,4 +86,5 @@ catalog:
         - allow: [User, Group]
     - type: url
       target: https://github.com/shazi7804/backstage-on-aws/blob/main/catalog-info.yaml
+      
 
