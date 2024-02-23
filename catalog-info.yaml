@@ -18,14 +18,14 @@ metadata:
     - url: https://backstage.demo.shazi.info
       title: Landing page
 spec:
-  owner: scottliao
+  owner: admin
 ---
 apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
   name: backstage-infra
 spec:
-  owner: scottliao
+  owner: admin
   domain: backstage.demo.shazi.info
 ---
 apiVersion: backstage.io/v1alpha1
@@ -54,5 +54,5 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: scottliao
+  owner: admin
   system: backstage-infra
