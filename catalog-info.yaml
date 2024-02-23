@@ -31,18 +31,6 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage-nginx
-  annotations:
-    github.com/project-slug: shazi7804/backstage-on-aws
-    endoflife.date/products: nginx
-spec:
-  type: service
-  lifecycle: production
-  owner: scottliao
----
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
   name: backstage
   description: |
     Backstage is an open-source developer portal that puts the developer experience first.
@@ -68,4 +56,3 @@ spec:
   lifecycle: production
   owner: scottliao
   system: backstage-infra
-  dependsOn: ['backstage-nginx']
