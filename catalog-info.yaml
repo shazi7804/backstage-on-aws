@@ -24,11 +24,7 @@ apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
   name: backstage-infra
-  annotations:
-    github.com/project-slug: shazi7804/backstage-on-aws
-    endoflife.date/products: nodejs@18
 spec:
-  lifecycle: production
   owner: scottliao
   domain: backstage.demo.shazi.info
 ---
