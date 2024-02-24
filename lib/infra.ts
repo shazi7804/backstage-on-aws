@@ -453,7 +453,7 @@ export class BackstageInfra extends cdk.Stack {
                 }
             }
         });
-        argoHelmChartAddOn.node.addDependency(crossplaneNamespace)
+        argoHelmChartAddOn.node.addDependency(argoNamespaceName)
         argoHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart)
 
         const argoCm = this.cluster.addManifest('argo-user-backstage', {

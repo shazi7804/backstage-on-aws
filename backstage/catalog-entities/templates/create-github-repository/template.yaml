@@ -36,7 +36,7 @@ spec:
           type: string
           ui:field: RepoUrlPicker
           ui:options:
-            allowedOwners: ['shazi7804']
+            # allowedOwners: ['shazi7804']
             allowedHosts: ['github.com']
         defaultBranch:
           default: main
