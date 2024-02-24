@@ -263,6 +263,7 @@ export class BackstageInfra extends cdk.Stack {
         })
         databaseExternalSecret.node.addDependency(externalSecretsHelmChart);
         databaseExternalSecret.node.addDependency(externalSecretsServiceAccount);
+        databaseExternalSecret.node.addDependency(clusterSecretStore);
         
         ///////////////////////////////////
         // Addons : AWS load balancer controller
@@ -624,6 +625,7 @@ export class BackstageInfra extends cdk.Stack {
         })
         backstageExternalSecret.node.addDependency(externalSecretsHelmChart);
         backstageExternalSecret.node.addDependency(externalSecretsServiceAccount);
+        backstageExternalSecret.node.addDependency(clusterSecretStore);
 
         const backstageHelmChartAddOn = this.cluster.addHelmChart('backstage-helmchart', {
             chart: 'backstage',

@@ -161,6 +161,11 @@ data:
 Authorization callback URL: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com/api/auth/github/handler/frame
 ```
 
+- Test to login with Github backstage console
+
+```
+https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
+```
 
 
 ## ArgoCD Configuration
