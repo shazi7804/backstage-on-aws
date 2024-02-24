@@ -1,0 +1,84 @@
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "3"
+      meta.helm.sh/release-name: backstage
+      meta.helm.sh/release-namespace: backstage
+    labels:
+      app.kubernetes.io/component: backstage
+      app.kubernetes.io/instance: backstage
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: backstage
+      helm.sh/chart: backstage-1.8.2
+    name: backstage
+    namespace: backstage
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: backstage
+        app.kubernetes.io/instance: backstage
+        app.kubernetes.io/name: backstage
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          checksum/app-config: 5fd18ec6fdec1a8636571a6d24dfca63841e876960b42a57fbc197c148783e29
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: backstage
+          app.kubernetes.io/instance: backstage
+          app.kubernetes.io/managed-by: Helm
+          app.kubernetes.io/name: backstage
+          helm.sh/chart: backstage-1.8.2
+      spec:
+        containers:
+        - args:
+          - --config
+          - /app/app-config-from-configmap.yaml
+          command:
+          - node
+          - packages/backend
+          - --config
+          - app-config.yaml
+          env:
+          - name: APP_CONFIG_backend_listen_port
+            value: "7007"
+          envFrom:
+          - secretRef:
+              name: backstage-database-secret
+          - secretRef:
+              name: backstage-secret
+          image: 001546640371.dkr.ecr.us-east-1.amazonaws.com/backstage:latest
+          imagePullPolicy: Always
+          name: backstage-backend
+          ports:
+          - containerPort: 7007
+            name: backend
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /app/app-config-from-configmap.yaml
+            name: backstage-app-config
+            subPath: app-config.yaml
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: default
+        serviceAccountName: default
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: backstage-app-config
+          name: backstage-app-config
