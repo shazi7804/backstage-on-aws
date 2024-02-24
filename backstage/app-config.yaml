@@ -20,10 +20,10 @@ backend:
     connection: ':memory:'
   cache:
     store: memory
-  # reading:
-  #   allow:
-  #     - host: github.com
-  #     - host: localhost
+  reading:
+    allow:
+      - host: github.com
+      - host: localhost
 
 # kubernetes:
 #   serviceLocatorMethod:
