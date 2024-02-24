@@ -8,6 +8,15 @@ spec:
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
+  name: provider-aws
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws:v1.1.0
+  controllerConfigRef:
+    name: aws-config
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
   name: upbound-provider-family-aws
 spec:
   package: xpkg.upbound.io/upbound/provider-family-aws:v1.1.0
