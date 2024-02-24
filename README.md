@@ -104,7 +104,7 @@ Common Name (e.g. server FQDN or YOUR name) []: backstage.local
 ```
 
 
-```
+```bash
 # argocd.local
 > openssl req -newkey rsa:2048 -new -nodes -x509 -days 365 -keyout argocd.local.key -out argocd.local.cert
 
@@ -118,12 +118,12 @@ Common Name (e.g. server FQDN or YOUR name) []: argocd.local
 
 ### Backstage Setup
 
-```
+```bash
 > git clone https://github.com/shazi7804/backstage-on-aws/
 > cd backstage-on-aws/
 ```
 
-```
+```bash
 # setup.sh
 export AWS_REGION='TODO'
 export AWS_ACCOUNT='TODO'
@@ -142,7 +142,7 @@ export BACKSTAGE_ACM_ARN="arn:aws:acm:..."
 
 2. Configuration your new domain for backstage
 
-```
+```bash
 > aws eks update-kubeconfig --name backstage --region ${AWS_REGION} --role-arn arn:aws:iam::01234567:role/...
 > kubectl edit cm/backstage-app-config -n backstage
 

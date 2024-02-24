@@ -370,7 +370,6 @@ export class BackstageInfra extends cdk.Stack {
             }
         })
         crossplaneHelmChartAddOn.node.addDependency(crossplaneNamespace)
-        crossplaneHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart)
 
         const crossplaneControllerConfig = this.cluster.addManifest("crossplane-controller-config", {
             apiVersion: 'pkg.crossplane.io/v1alpha1',
@@ -393,7 +392,8 @@ export class BackstageInfra extends cdk.Stack {
                 ],
             },
         });
-        crossplaneControllerConfig.node.addDependency(crossplaneHelmChartAddOn)
+        crossplaneControllerConfig.node.addDependency(crossplaneHelmChartAddOn);
+        crossplaneControllerConfig.node.addDependency(crossplaneAwsIrsa);
 
 
         // const crossplaneAwsProviderManifest = this.cluster.addManifest("crossplane-aws-provider", {
@@ -466,6 +466,7 @@ export class BackstageInfra extends cdk.Stack {
             }
         });
         argoHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart);
+        argoHelmChartAddOn.node.addDependency(argoNamespace);
 
         const argoCm = this.cluster.addManifest('argo-user-backstage', {
             apiVersion: 'v1',
@@ -482,7 +483,8 @@ export class BackstageInfra extends cdk.Stack {
                 'account.admin': 'apiKey'
             }
         });
-
+        argoCm.node.addDependency(argoNamespace)
+        argoCm.node.addDependency(argoHelmChartAddOn)
 
         // const argoRolloutsNamespaceName = "argocd-rollouts"
         // const argoRolloutsNamespace = this.cluster.addManifest('argo-rollouts-namespace', {
@@ -626,6 +628,8 @@ export class BackstageInfra extends cdk.Stack {
         backstageExternalSecret.node.addDependency(externalSecretsHelmChart);
         backstageExternalSecret.node.addDependency(externalSecretsServiceAccount);
         backstageExternalSecret.node.addDependency(clusterSecretStore);
+        backstageExternalSecret.node.addDependency(backstageNamespace);
+        backstageExternalSecret.node.addDependency(backstageSecret);
 
         const backstageHelmChartAddOn = this.cluster.addHelmChart('backstage-helmchart', {
             chart: 'backstage',

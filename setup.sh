@@ -6,8 +6,8 @@ export AWS_ACCOUNT=your-account-id
 export GITHUB_TOKEN=your-github-token
 export AUTH_GITHUB_CLIENT_ID=your-github-auth-app-client-id
 export AUTH_GITHUB_CLIENT_SECRET=your-github-auth-app-client-secret
-export ARGOCD_ACM_ARN="arn:aws:acm:..."
 export BACKSTAGE_ACM_ARN="arn:aws:acm:..."
+export ARGOCD_ACM_ARN="arn:aws:acm:..."
 
 ##
 export ECR_REPO_NAME=backstage
