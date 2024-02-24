@@ -6,4 +6,3 @@ metadata:
   description: The developer unit
 spec:
   type: developer
-  children: []

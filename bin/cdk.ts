@@ -2,7 +2,6 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { BackstageInfra } from '../lib/infra';
-import { Backstage } from '../lib/backstage';
 
 const app = new cdk.App();
 

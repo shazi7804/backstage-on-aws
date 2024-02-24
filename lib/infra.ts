@@ -314,19 +314,33 @@ export class BackstageInfra extends cdk.Stack {
             }
         })
 
-        const crossplaneServiceAccount = this.cluster.addServiceAccount('crossplane-controller-sa', {
-            name: "crossplane-aws-irsa",
-            namespace: crossplaneNamespaceName
-        })
-        crossplaneServiceAccount.node.addDependency(crossplaneNamespace)
-        crossplaneServiceAccount.role.attachInlinePolicy(new iam.Policy(this, 'crossplane-aws-policy', {
-            statements: [
-                new iam.PolicyStatement({
-                    resources: ['*'],
-                    actions: ["*"],
-                }),
-            ],
-        }))
+        // const crossplaneServiceAccount = this.cluster.addServiceAccount('crossplane-controller-sa', {
+        //     name: "crossplane-aws-irsa",
+        //     namespace: crossplaneNamespaceName
+        // })
+        // crossplaneServiceAccount.node.addDependency(crossplaneNamespace)
+        // crossplaneServiceAccount.role.attachInlinePolicy(new iam.Policy(this, 'crossplane-aws-policy', {
+        //     statements: [
+        //         new iam.PolicyStatement({
+        //             resources: ['*'],
+        //             actions: ["*"],
+        //         }),
+        //     ],
+        // }))
+        const crossplaneAwsIrsaConditionkey = new cdk.CfnJson(this, 'crossplane-aws-irsa-condition', {
+            value: {
+              [`${this.cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: 'system:serviceaccount:' + props.namespace + ':provider-aws-*',
+            },
+        });
+        const crossplaneAwsIrsa = new iam.Role(this, 'crossplane-aws-irsa', {
+            assumedBy: new iam.FederatedPrincipal(
+              this.cluster.openIdConnectProvider.openIdConnectProviderArn, {
+                StringLike: crossplaneAwsIrsaConditionkey,
+              },
+              'sts:AssumeRoleWithWebIdentity'),
+            roleName: 'crossplane-aws-irsa',
+            managedPolicies: [ iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess') ],
+        });
 
         const crossplaneHelmChartAddOn = this.cluster.addHelmChart('crossplane-helm-chart', {
             chart: 'crossplane',
@@ -363,7 +377,7 @@ export class BackstageInfra extends cdk.Stack {
             metadata: {
                 name: 'aws-config',
                 annotations: {
-                    'eks.amazonaws.com/role-arn': crossplaneServiceAccount.role.roleArn
+                    'eks.amazonaws.com/role-arn': crossplaneAwsIrsa.roleArn
                 }
             },
             spec: {

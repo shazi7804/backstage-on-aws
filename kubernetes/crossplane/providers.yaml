@@ -4,24 +4,17 @@ metadata:
   name: provider-terraform
 spec:
   package: xpkg.upbound.io/upbound/provider-terraform:v0.14.1
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
-  name: provider-aws
+  name: upbound-provider-family-aws
 spec:
-  package: xpkg.upbound.io/upbound/provider-aws:v1.1.0
+  package: xpkg.upbound.io/upbound/provider-family-aws:v1.1.0
   controllerConfigRef:
     name: aws-config
-# ---
-# apiVersion: pkg.crossplane.io/v1
-# kind: Provider
-# metadata:
-#   name: upbound-provider-family-aws
-# spec:
-#   package: xpkg.upbound.io/upbound/provider-family-aws:v1.1.0
-#   controllerConfigRef:
-#     name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -29,6 +22,8 @@ metadata:
   name: provider-aws-s3
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-s3:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -36,6 +31,8 @@ metadata:
   name: provider-aws-vpc
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-vpc:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -43,6 +40,8 @@ metadata:
   name: provider-aws-ec2
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-ec2:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -50,6 +49,8 @@ metadata:
   name: provider-aws-cloudtrail
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-cloudtrail:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -57,6 +58,8 @@ metadata:
   name: provider-aws-ecrpublic
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-ecrpublic:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -64,6 +67,8 @@ metadata:
   name: provider-aws-guardduty
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-guardduty:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -71,6 +76,8 @@ metadata:
   name: provider-aws-configservice
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-configservice:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -78,6 +85,8 @@ metadata:
   name: provider-aws-ecr
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-ecr:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -85,6 +94,8 @@ metadata:
   name: provider-aws-eks
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-eks:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -92,6 +103,8 @@ metadata:
   name: provider-aws-grafana
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-grafana:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -99,6 +112,8 @@ metadata:
   name: provider-aws-organizations
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-organizations:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -106,6 +121,8 @@ metadata:
   name: provider-aws-iam
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-iam:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -113,4 +130,6 @@ metadata:
   name: provider-aws-rds
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-rds:v1.1.0
+  controllerConfigRef:
+    name: aws-config
 ---

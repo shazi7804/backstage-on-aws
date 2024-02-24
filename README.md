@@ -222,3 +222,7 @@ data:
         Cookie:
             $env: 'ARGOCD_AUTH_TOKEN'
 ```
+
+```
+> kubectl rollout restart deployment/backstage -n backstage
+```
