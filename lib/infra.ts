@@ -323,10 +323,7 @@ export class BackstageInfra extends cdk.Stack {
             statements: [
                 new iam.PolicyStatement({
                     resources: ['*'],
-                    actions: [
-                        "iam:*",
-                        "sts:*",
-                    ],
+                    actions: ["*"],
                 }),
             ],
         }))
@@ -384,32 +381,32 @@ export class BackstageInfra extends cdk.Stack {
         crossplaneControllerConfig.node.addDependency(crossplaneHelmChartAddOn)
 
 
-        const crossplaneAwsProviderManifest = this.cluster.addManifest("crossplane-aws-provider", {
-            apiVersion: 'pkg.crossplane.io/v1',
-            kind: 'Provider',
-            metadata: {
-                name: 'upbound-provider-family-aws',
-            },
-            spec: {
-                package: 'xpkg.upbound.io/upbound/provider-family-aws:v1.1.0',
-                controllerConfigRef: {
-                    name: 'aws-config',
-                },
-            },
-        });
-        crossplaneAwsProviderManifest.node.addDependency(crossplaneControllerConfig)
+        // const crossplaneAwsProviderManifest = this.cluster.addManifest("crossplane-aws-provider", {
+        //     apiVersion: 'pkg.crossplane.io/v1',
+        //     kind: 'Provider',
+        //     metadata: {
+        //         name: 'upbound-provider-family-aws',
+        //     },
+        //     spec: {
+        //         package: 'xpkg.upbound.io/upbound/provider-family-aws:v1.1.0',
+        //         controllerConfigRef: {
+        //             name: 'aws-config',
+        //         },
+        //     },
+        // });
+        // crossplaneAwsProviderManifest.node.addDependency(crossplaneControllerConfig)
         
-        const crossplaneKubernetesProviderManifest = this.cluster.addManifest("crossplane-kubernetes-provider", {
-            apiVersion: 'pkg.crossplane.io/v1',
-            kind: 'Provider',
-            metadata: {
-                name: 'provider-terraform',
-            },
-            spec: {
-                package: 'xpkg.upbound.io/upbound/provider-terraform:v0.14.1',
-            },
-        });
-        crossplaneKubernetesProviderManifest.node.addDependency(crossplaneControllerConfig)
+        // const crossplaneKubernetesProviderManifest = this.cluster.addManifest("crossplane-kubernetes-provider", {
+        //     apiVersion: 'pkg.crossplane.io/v1',
+        //     kind: 'Provider',
+        //     metadata: {
+        //         name: 'provider-terraform',
+        //     },
+        //     spec: {
+        //         package: 'xpkg.upbound.io/upbound/provider-terraform:v0.14.1',
+        //     },
+        // });
+        // crossplaneKubernetesProviderManifest.node.addDependency(crossplaneControllerConfig)
 
         /////////////////////////////////////
         // Addons : ArgoCD
