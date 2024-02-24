@@ -125,23 +125,23 @@ Common Name (e.g. server FQDN or YOUR name) []: argocd.local
 
 ```
 # setup.sh
-export GITHUB_TOKEN=xxxx
-export AUTH_GITHUB_CLIENT_ID=xxxx
-export AUTH_GITHUB_CLIENT_SECRET=xxx
+export AWS_REGION='TODO'
+export AWS_ACCOUNT='TODO'
+export GITHUB_TOKEN='TODO'
+export AUTH_GITHUB_CLIENT_ID='TODO'
+export AUTH_GITHUB_CLIENT_SECRET='TODO'
+export ARGOCD_ACM_ARN="arn:aws:acm:..."
+export BACKSTAGE_ACM_ARN="arn:aws:acm:..."
 
 > chmod +x setup.sh && ./setup.sh
 ```
 
-```
-> cdk deploy BackstageInfraStack
-Do you wish to deploy these changes (y/n)? y
-```
-
 ## Configuration
 
-Get AWS CLI credential from `Workshop studio` and paste to Cloud9 environment.
+1. Get AWS CLI credential from `Workshop studio` and paste to Cloud9 environment.
 
-- Configuration your new domain for backstage
+2. Configuration your new domain for backstage
+
 ```
 > aws eks update-kubeconfig --name backstage --region ${AWS_REGION} --role-arn arn:aws:iam::01234567:role/...
 > kubectl edit cm/backstage-app-config -n backstage
@@ -161,7 +161,7 @@ data:
 Authorization callback URL: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com/api/auth/github/handler/frame
 ```
 
-- Test to login with Github backstage console
+- Test to login Backstage console with Github auth
 
 ```
 https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com

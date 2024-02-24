@@ -472,7 +472,7 @@ export class BackstageInfra extends cdk.Stack {
             kind: 'ConfigMap',
             metadata: {
                 name: 'argocd-cm',
-                namespace: props.namespace,
+                namespace: argoNamespaceName,
                 labels: {
                     'app.kubernetes.io/name': 'argocd-cm',
                     'app.kubernetes.io/part-of': 'argocd'
