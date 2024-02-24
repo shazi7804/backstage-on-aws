@@ -42,7 +42,7 @@ yarn build:backend --config ../../app-config.yaml
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com
 aws ecr create-repository \
     --repository-name $ECR_REPO_NAME \
-    --region $AWS_REGION
+    --region $AWS_REGION  > /dev/null
 
 DOCKER_BUILDKIT=1 docker build . -t backstage
 docker tag backstage $ECR_REPO_URI
