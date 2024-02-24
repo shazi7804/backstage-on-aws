@@ -329,7 +329,7 @@ export class BackstageInfra extends cdk.Stack {
         // }))
         const crossplaneAwsIrsaConditionkey = new cdk.CfnJson(this, 'crossplane-aws-irsa-condition', {
             value: {
-              [`${this.cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: 'system:serviceaccount:' + props.namespace + ':provider-aws-*',
+              [`${this.cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: 'system:serviceaccount:' + crossplaneNamespaceName + ':provider-aws-*',
             },
         });
         const crossplaneAwsIrsa = new iam.Role(this, 'crossplane-aws-irsa', {
@@ -437,7 +437,7 @@ export class BackstageInfra extends cdk.Stack {
             repository: "https://argoproj.github.io/argo-helm",
             chart: "argo-cd",
             release: "argocd",
-            namespace: "argocd",
+            namespace: argoNamespaceName,
             values: {
                 global: {
                     domain: ""
@@ -464,8 +464,7 @@ export class BackstageInfra extends cdk.Stack {
                 }
             }
         });
-        argoHelmChartAddOn.node.addDependency(argoNamespaceName)
-        argoHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart)
+        argoHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart);
 
         const argoCm = this.cluster.addManifest('argo-user-backstage', {
             apiVersion: 'v1',
