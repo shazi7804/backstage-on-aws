@@ -1,0 +1,11 @@
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: InternetGateway
+metadata:
+  name: ${{ values.name | dump }}-igw
+spec:
+  forProvider:
+    region: us-east-1
+    vpcIdRef:
+      name: ${{ values.name | dump }}-vpc
+  providerConfigRef:
+    name: aws-config

@@ -1,0 +1,81 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: create-vpc-crossplane
+  title: Creates a Amazon VPC by Crossplane
+  description: Creates a Amazon VPC by Crossplane
+  tags: ['crossplane', 'aws', 'vpc', 'network']
+spec:
+  owner: guest
+  type: service
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+        - owner
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: User
+    - title: Configuration VPC options
+      properties:
+        vpcCidrBlock:
+          title: VpcCidrBlock
+          type: string
+          description: Network CIDR block of the Amazon VPC
+          ui:autofocus: true
+    - title: Configuration repository options
+      properties:
+        repoUrl: # need a place to store this entity information.
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            # allowedOwners: ['shazi7804']
+            allowedHosts: ['github.com']
+        defaultBranch:
+          default: main
+          type: string
+  steps:
+    - id: create-repo
+      name: Create a Github Repository
+      action: github:repo:create
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+  
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./content
+        targetPath: ./backstage/templates/create-vpc-crossplane
+        values:
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
+          vpcCidr: ${{ parameters.vpcCidrBlock }}
+  
+    - id: publish
+      name: Publishing Details
+      action: github:repo:push
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: ${{ parameters.defaultBranch }}
+        gitAuthorName: ${{ user.entity.metadata.name }}
+        gitAuthorEmail: ${{ user.entity.spec.profile.email }}
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
