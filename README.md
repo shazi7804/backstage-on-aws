@@ -286,15 +286,13 @@ deployment.apps/backstage restarted
 
 Create a new ArgoCD application and add the repository `https://github.com/shazi7804/backstage-on-aws`, specifying the sub-directory `kubernetes/` for installation.
 
-- Application: backstage-on-aws
-- SYNC POLICY: Automatic
-- Repository URL: https://github.com/shazi7804/backstage-on-aws
-- Path: kubernetes/
-- Cluster URL: https://<amazon-eks-oidc-id>.gr7.us-east-1.eks.amazonaws.com (selection)
-- Namespace: backstage
-- DIRECTORY RECURSE: checked
-
-Click `SYNC`
+- **Application:** `backstage-on-aws`
+- **Sync Policy:** `Automatic`
+- **Repository URL:** `https://github.com/shazi7804/backstage-on-aws`
+- **Path:** `kubernetes/crossplane/`
+- **Cluster URL:** `https://<amazon-eks-oidc-id>.gr7.us-east-1.eks.amazonaws.com` (selection)
+- **Namespace:** `backstage`
+- **Directory Recurse:** checked
 
 ## Create your first application (Developer View)
 
