@@ -468,23 +468,23 @@ export class BackstageInfra extends cdk.Stack {
         argoHelmChartAddOn.node.addDependency(awsLoadBalancerControllerChart);
         argoHelmChartAddOn.node.addDependency(argoNamespace);
 
-        const argoCm = this.cluster.addManifest('argo-user-backstage', {
-            apiVersion: 'v1',
-            kind: 'ConfigMap',
-            metadata: {
-                name: 'argocd-cm',
-                namespace: argoNamespaceName,
-                labels: {
-                    'app.kubernetes.io/name': 'argocd-cm',
-                    'app.kubernetes.io/part-of': 'argocd'
-                }
-            },
-            data: {
-                'account.admin': 'apiKey'
-            }
-        });
-        argoCm.node.addDependency(argoNamespace)
-        argoCm.node.addDependency(argoHelmChartAddOn)
+        // const argoCm = this.cluster.addManifest('argo-user-backstage', {
+        //     apiVersion: 'v1',
+        //     kind: 'ConfigMap',
+        //     metadata: {
+        //         name: 'argocd-cm',
+        //         namespace: argoNamespaceName,
+        //         labels: {
+        //             'app.kubernetes.io/name': 'argocd-cm',
+        //             'app.kubernetes.io/part-of': 'argocd'
+        //         }
+        //     },
+        //     data: {
+        //         'account.admin': 'apiKey'
+        //     }
+        // });
+        // argoCm.node.addDependency(argoNamespace)
+        // argoCm.node.addDependency(argoHelmChartAddOn)
 
         // const argoRolloutsNamespaceName = "argocd-rollouts"
         // const argoRolloutsNamespace = this.cluster.addManifest('argo-rollouts-namespace', {

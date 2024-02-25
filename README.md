@@ -1,9 +1,11 @@
 # Backstage on AWS
 
-## Prerequisites
+## Preparation
 
 The following prerequisites are required to complete this workshop:
 
+- Github Personal Token. see how to [Managing your personal access tokens](https://docs.github.com/en/enterprise-server@3.9/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+- Github OAuth app `Client ID` and `Client Secret`. see how to [Creating an OAuth app](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)
 - A computer with an internet connection running Microsoft Windows, Mac OSX, or Linux.
 - An internet browser such as Chrome, Firefox, Safari, Opera, or Edge.
 - Access to an email account to login to Workshop Studio.
@@ -91,6 +93,8 @@ fi
 
 ## Create two SSL certifications for Backstage and Argo CD
 
+Using openssl to generate self-signed certificates for private domain `backstage.local` and `argocd.local`.
+
 ```
 # backstage.local
 > openssl req -newkey rsa:2048 -new -nodes -x509 -days 365 -keyout backstage.local.key -out backstage.local.cert
@@ -123,6 +127,8 @@ Common Name (e.g. server FQDN or YOUR name) []: argocd.local
 > cd backstage-on-aws/
 ```
 
+Input backstage parameters for setup
+
 ```bash
 # setup.sh
 export AWS_REGION='TODO'
@@ -136,7 +142,7 @@ export BACKSTAGE_ACM_ARN="arn:aws:acm:..."
 > chmod +x setup.sh && ./setup.sh
 ```
 
-## Configuration
+## Backstage Configuration
 
 1. Get AWS CLI credential from `Workshop studio` and paste to Cloud9 environment.
 
@@ -157,6 +163,7 @@ data:
 ```
 
 - Configuration your new domain for Github OAuth callback 
+
 ```
 Authorization callback URL: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com/api/auth/github/handler/frame
 ```
@@ -172,50 +179,53 @@ https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
 
 - Decrypt password and login argocd
 
-```
+```bash
 > kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 > argocd login k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
 ```
 
-- Add Amazon EKS cluster to register ArgoCD
+### Add Amazon EKS cluster to register ArgoCD
 
-```
+```bash
 > CONTEXT_NAME=$(kubectl config view -o jsonpath='{.current-context}')
 > argocd cluster add $CONTEXT_NAME
 ```
+
 
 ### Add backstage account to Argo CD via configmap
 
 1. Get the configmap argocd-cm of Argo CD by executing the below command.
 
-```
+```bash
 > kubectl get configmap argocd-cm -n argocd -o yaml > argocd-cm.yml
 ```
 
 2. Edit the configmap file argocd-cm.yml and add the below line under **"data"** with **new account** which has **API Key** and **login**.
 
-```
+```yaml
 data:
   accounts.backstage: apiKey
 ```
 
 3. Apply the configmap by executing the below command . This will add a new account and allow that account to process an API key as well as login via the Command Line Interface and Graphical User Interface.
 
-```
+```bash
 > kubectl apply -f argocd-cm.yml -n argocd
 ```
 
-### Generate Token for Backstage integrate
+### ArgoCD generate token for Backstage integration
 
-```
+```bash
 > argocd account generate-token --account backstage
+
+ARGOCD_AUTH_TOKEN
 ```
 
-```
-kubectl get configmap backstage-app-config -n backstage -o yaml > backstage-app-config.yml
+```bash
+> kubectl get configmap backstage-app-config -n backstage -o yaml > backstage-app-config.yml
 ```
 
-```
+```yaml
 data:
   app-config.yaml: |
     proxy:
@@ -228,6 +238,6 @@ data:
             $env: 'ARGOCD_AUTH_TOKEN'
 ```
 
-```
+```bash
 > kubectl rollout restart deployment/backstage -n backstage
 ```
