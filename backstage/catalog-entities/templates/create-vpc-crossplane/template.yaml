@@ -54,7 +54,7 @@ spec:
       action: fetch:template
       input:
         url: ./content
-        targetPath: ./backstage/templates/create-vpc-crossplane
+        targetPath: ./templates/backstage/create-vpc-crossplane
         values:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
