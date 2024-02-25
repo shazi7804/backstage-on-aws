@@ -4,6 +4,7 @@ metadata:
   name: upbound-provider-family-aws
   annotations:
     argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   package: xpkg.upbound.io/upbound/provider-family-aws:v1.1.0
   controllerConfigRef:

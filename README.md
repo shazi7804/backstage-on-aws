@@ -1,5 +1,16 @@
 # Backstage on AWS
 
+Platform engineering has emerged in response to the growing complexity of cloud native and the challenge of scaling DevOps to the enterprise. During this repository, we’ll dive into:
+
+1. Building a platform with Kubernees in practice. 
+2. How to combine Amazon EKS, Backstage, Argo CD, Kyverno and Crossplane in a platform your developers will love to use.
+
+![](img/building-platform-practice.png)
+
+For Backstage on AWS's architecture components of the Amazon EKS, Amazon ECR, Amazon RDS for Postgresql, AWS Secret Manager and AWS ACM.
+
+![](img/backstage-on-aws.png)
+
 ## Preparation
 
 The following prerequisites are required to complete this workshop:
@@ -182,13 +193,15 @@ Authorization callback URL: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.
 
 - Test to login Backstage console with Github auth
 
+```
+https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
+```
+
 ![](img/backstage-login.png)
 
 ![](img/backstage-home.png)
 
-```
-https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
-```
+
 
 
 ## ArgoCD Configuration
@@ -197,13 +210,13 @@ https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
 
 ```bash
 > kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-> argocd login k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
+> argocd login k8s-argocd-xxxxxx.us-east-1.elb.amazonaws.com
 
 Username: admin
 Password: <argocd-password>
 
 'admin:login' logged in successfully
-Context 'k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com' updated
+Context 'k8s-argocd-xxxxxx.us-east-1.elb.amazonaws.com' updated
 ```
 
 ### Add Amazon EKS cluster to register ArgoCD
@@ -284,7 +297,7 @@ deployment.apps/backstage restarted
 
 ### Deploy AWS providers for Crossplane using ArgoCD.
 
-Create a new ArgoCD application and add the repository `https://github.com/shazi7804/backstage-on-aws`, specifying the sub-directory `kubernetes/` for installation.
+Create a new ArgoCD application and add the repository `https://github.com/shazi7804/backstage-on-aws`, specifying the sub-directory `kubernetes/crossplane` for installation.
 
 - **Application:** `backstage-on-aws`
 - **Sync Policy:** `Automatic`
