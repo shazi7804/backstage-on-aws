@@ -70,7 +70,7 @@ export class BackstageInfra extends cdk.Stack {
         const nodeGroup = this.cluster.addAutoScalingGroupCapacity('worker-node', {
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
             maxInstanceLifetime: cdk.Duration.days(7),
-            minCapacity: 1,
+            minCapacity: 2,
         })
 
         const databaseSecret = new secretm.Secret(this, "database-secret", {
