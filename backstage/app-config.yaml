@@ -71,19 +71,21 @@ catalog:
       target: all-catalogs.yaml
       rules:
         - allow: [Component, System, API, Resource, Location, Template, User, Group]
-    # Examples
-    - type: file
-      target: examples/template/template.yaml
-      rules:
-        - allow: [Template]
-    - type: file
-      target: examples/entities.yaml
-      rules:
-        - allow: [Component, System, API, Resource]
-    - type: file
-      target: examples/org.yaml
-      rules:
-        - allow: [User, Group]
+      
+    # Backstage example resources
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-systems.yaml
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/org.yaml
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-domains.yaml
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-resources.yaml
+    # Backstage on AWS
     - type: url
       target: https://github.com/shazi7804/backstage-on-aws/blob/main/catalog-info.yaml
       
