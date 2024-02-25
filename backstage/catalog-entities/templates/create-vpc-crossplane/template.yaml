@@ -66,12 +66,15 @@ spec:
           owner: ${{ parameters.owner }}
           vpcCidr: ${{ parameters.vpcCidrBlock }}
   
-    - id: publish
-      name: Publishing Details
-      action: github:repo:push
+    - id: pull-request
+      name: Publishing Pull Request to Github
+      action: publish:github:pull-request
       input:
         repoUrl: ${{ parameters.repoUrl }}
-        defaultBranch: ${{ parameters.defaultBranch }}
+        branchName: ${{ parameters.defaultBranch }}
+        title: Create an Amazon VPC
+        description: Create an Amazon VPC with CIDR block ${{ parameters.vpcCidrBlock }}
+        commitMessage: Create an Amazon VPC with CIDR block ${{ parameters.vpcCidrBlock }} by ${{ parameters.owner }}
         gitAuthorName: ${{ user.entity.metadata.name }}
         gitAuthorEmail: ${{ user.entity.spec.profile.email }}
 
