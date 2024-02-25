@@ -1,7 +1,7 @@
 apiVersion: ec2.aws.crossplane.io/v1beta1
 kind: VPC
 metadata:
-  name: ${{ values.name | dump }}
+  name: ${{ values.name + "/Vpc" }}
 spec:
   forProvider:
     region: us-east-1
