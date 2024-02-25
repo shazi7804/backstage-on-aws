@@ -49,12 +49,6 @@ spec:
           default: main
           type: string
   steps:
-    - id: create-repo
-      name: Create a Github Repository
-      action: github:repo:create
-      input:
-        repoUrl: ${{ parameters.repoUrl }}
-  
     - id: fetch-base
       name: Fetch Base
       action: fetch:template
