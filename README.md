@@ -10,7 +10,7 @@ The following prerequisites are required to complete this workshop:
 - An internet browser such as Chrome, Firefox, Safari, Opera, or Edge.
 - Access to an email account to login to Workshop Studio.
 
-## Getting started 
+## Getting started (Administrator View)
 
 ### AWS Cloud9 Setup
 
@@ -144,22 +144,34 @@ export BACKSTAGE_ACM_ARN="arn:aws:acm:..."
 
 ## Backstage Configuration
 
-1. Get AWS CLI credential from `Workshop studio` and paste to Cloud9 environment.
+1. `Get AWS CLI credential` from `Workshop studio` and paste to Cloud9 environment.
 
 2. Configuration your new domain for backstage
 
 ```bash
 > aws eks update-kubeconfig --name backstage --region ${AWS_REGION} --role-arn arn:aws:iam::01234567:role/...
-> kubectl edit cm/backstage-app-config -n backstage
+> kubectl get configmap backstage-app-config -n backstage -o yaml > backstage-app-config.yaml
+```
 
+3. Modify `app` and `backend` sections `baseUrl` for new backstage AWS Application Load balancer DNS.
+
+```
 data:
   app-config.yaml: |
     app:
       baseUrl: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
     backend:
       baseUrl: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
+```
+
+Rollout backstage pods to refresh new `app-config.yaml`
+
+```
+> kubectl apply -f backstage-app-config.yaml -n backstage
+configmap/backstage-app-config configured
 
 > kubectl rollout restart deployment/backstage -n backstage
+deployment.apps/backstage restarted
 ```
 
 - Configuration your new domain for Github OAuth callback 
@@ -169,6 +181,10 @@ Authorization callback URL: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.
 ```
 
 - Test to login Backstage console with Github auth
+
+![](img/backstage-login.png)
+
+![](img/backstage-home.png)
 
 ```
 https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
@@ -182,6 +198,12 @@ https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
 ```bash
 > kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 > argocd login k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
+
+Username: admin
+Password: <argocd-password>
+
+'admin:login' logged in successfully
+Context 'k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com' updated
 ```
 
 ### Add Amazon EKS cluster to register ArgoCD
@@ -189,6 +211,13 @@ https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com
 ```bash
 > CONTEXT_NAME=$(kubectl config view -o jsonpath='{.current-context}')
 > argocd cluster add $CONTEXT_NAME
+
+INFO[0002] ServiceAccount "argocd-manager" created in namespace "kube-system" 
+INFO[0002] ClusterRole "argocd-manager-role" created    
+INFO[0002] ClusterRoleBinding "argocd-manager-role-binding" created 
+INFO[0007] Created bearer token secret for ServiceAccount "argocd-manager" 
+WARN[0008] Failed to invoke grpc call. Use flag --grpc-web in grpc calls. To avoid this warning message, use flag --grpc-web. 
+Cluster 'https://<amazon-eks-oidc-id>.gr7.us-east-1.eks.amazonaws.com' added
 ```
 
 
@@ -211,6 +240,7 @@ data:
 
 ```bash
 > kubectl apply -f argocd-cm.yml -n argocd
+configmap/argocd-cm configured
 ```
 
 ### ArgoCD generate token for Backstage integration
@@ -221,23 +251,60 @@ data:
 ARGOCD_AUTH_TOKEN
 ```
 
+Export ConfigMap `backstage-app-config` to edit config.
+
 ```bash
-> kubectl get configmap backstage-app-config -n backstage -o yaml > backstage-app-config.yml
+> kubectl get configmap backstage-app-config -n backstage -o yaml > backstage-app-config.yaml
 ```
+
+Add new section `proxy:` for argocd API auth.
 
 ```yaml
 data:
   app-config.yaml: |
     proxy:
-    '/argocd/api':
-        target: https://k8s-backstag-xxxxxx.us-east-1.elb.amazonaws.com/api/v1/
+      '/argocd/api':
+        target: https://k8s-argocd-xxxxxx.us-east-1.elb.amazonaws.com/api/v1/
         changeOrigin: true
         secure: false
         headers:
         Cookie:
-            $env: 'ARGOCD_AUTH_TOKEN'
+          $env: 'ARGOCD_AUTH_TOKEN'
 ```
 
-```bash
-> kubectl rollout restart deployment/backstage -n backstage
+Apply `backstage-app-config.yaml` and rollout backstage pods.
+
 ```
+> kubectl apply -f backstage-app-config.yaml -n backstage
+configmap/backstage-app-config configured
+
+> kubectl rollout restart deployment/backstage -n backstage
+deployment.apps/backstage restarted
+```
+
+### Deploy AWS providers for Crossplane using ArgoCD.
+
+Create a new ArgoCD application and add the repository `https://github.com/shazi7804/backstage-on-aws`, specifying the sub-directory `kubernetes/` for installation.
+
+- Application: backstage-on-aws
+- SYNC POLICY: Automatic
+- Repository URL: https://github.com/shazi7804/backstage-on-aws
+- Path: kubernetes/
+- Cluster URL: https://<amazon-eks-oidc-id>.gr7.us-east-1.eks.amazonaws.com (selection)
+- Namespace: backstage
+- DIRECTORY RECURSE: checked
+
+Click `SYNC`
+
+## Create your first application (Developer View)
+
+### New a repository
+
+### Easy to setup infra by Backstage template
+
+
+### Easy to setup security by Backstage template
+
+## Injection best practices before deployment by Kyverno
+
+To be continued ...
