@@ -1,5 +1,7 @@
 # Backstage on AWS
 
+![](img/backstage-logo.png)
+
 Platform engineering has emerged in response to the growing complexity of cloud native and the challenge of scaling DevOps to the enterprise. During this repository, we’ll dive into:
 
 1. Building a platform with Kubernees in practice. 
@@ -306,6 +308,15 @@ Create a new ArgoCD application and add the repository `https://github.com/shazi
 - **Cluster URL:** `https://<amazon-eks-oidc-id>.gr7.us-east-1.eks.amazonaws.com` (selection)
 - **Namespace:** `backstage`
 - **Directory Recurse:** checked
+
+Verify crossplane providers `healthy` and `installed`
+
+```bash
+> kubectl get providers
+```
+
+![](img/crossplane-providers-status.png)
+
 
 ## Create your first application (Developer View)
 

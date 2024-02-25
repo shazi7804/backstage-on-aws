@@ -31,7 +31,7 @@ spec:
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage
+  name: backstage-on-aws
   description: |
     Backstage is an open-source developer portal that puts the developer experience first.
   links:
@@ -46,11 +46,11 @@ metadata:
     - title: Github
       url: https://github.com/shazi7804/backstage-on-aws
   annotations:
-    github.com/project-slug: shazi7804/backstage-on-aws/backstage
+    github.com/project-slug: shazi7804/backstage-on-aws
     backstage.io/kubernetes-id: backstage
     backstage.io/kubernetes-namespace: backstage
     endoflife.date/products: nodejs@18,postgresql@15.5
-    argocd/app-name: backstage
+    argocd/app-name: backstage-on-aws
 spec:
   type: service
   lifecycle: production
