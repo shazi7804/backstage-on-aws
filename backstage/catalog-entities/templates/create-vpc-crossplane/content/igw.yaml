@@ -1,10 +1,10 @@
-apiVersion: ec2.aws.crossplane.io/v1beta1
+apiVersion: ec2.aws.upbound.io/v1beta1
 kind: InternetGateway
 metadata:
   name: ${{ values.name + "-igw" }}
   annotations:
     argocd.argoproj.io/sync-wave: "2"
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    # argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   forProvider:
     region: us-east-1

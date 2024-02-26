@@ -60,7 +60,7 @@ spec:
         values:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
-          vpcCidr: ${{ parameters.vpcCidrBlock }}
+          vpcCidrBlock: ${{ parameters.vpcCidrBlock }}
     - id: pull-request
       name: Publishing Pull Request to Github
       action: publish:github:pull-request
