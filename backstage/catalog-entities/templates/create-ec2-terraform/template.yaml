@@ -69,7 +69,6 @@ spec:
           enum:
             - apply
             - destroy
-
     - title: Choose a Repository Location
       required:
         - repoUrl
@@ -88,13 +87,13 @@ spec:
           type: string
           enum: ['private', 'public', 'internal']
           default: 'public'
-
   steps:
     - id: fetch-base
       name: Fetching Details from content folder
       action: fetch:template
       input:
         url: ./content
+        targetPath: ./templates/backstage/create-ec2-terraform
         copyWithoutRender:
           - .github/workflows/*
         values:

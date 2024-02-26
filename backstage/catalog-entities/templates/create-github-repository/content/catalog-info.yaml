@@ -3,6 +3,9 @@ kind: Component
 metadata:
   name: ${{ values.name | dump }}
   description: An example of a repository creation.
+  annotations:
+    github.com/project-slug: ${{ values.repoUrl.owner + "/" + values.repoUrl.repo }}
+
 spec:
   type: service
   owner: ${{ values.owner | dump }}

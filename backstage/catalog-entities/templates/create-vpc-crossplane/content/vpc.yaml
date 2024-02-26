@@ -10,4 +10,4 @@ spec:
     enableDnsHostNames: true
     instanceTenancy: default
   providerConfigRef:
-    name: aws-config
+    name: default

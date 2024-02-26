@@ -50,7 +50,6 @@ spec:
       action: github:repo:create
       input:
         repoUrl: ${{ parameters.repoUrl }}
-  
     - id: fetch-base
       name: Fetch Base
       action: fetch:template
@@ -59,7 +58,7 @@ spec:
         values:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
-  
+          repoUrl: ${{ parameters.repoUrl | parseRepoUrl }}
     - id: init-repo
       name: Initialize Repository
       action: github:repo:push

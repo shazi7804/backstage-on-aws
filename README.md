@@ -320,7 +320,9 @@ Verify crossplane providers `healthy` and `installed`
 
 ## Create your first application (Developer View)
 
-### New a repository
+Login the Backstage console
+
+### New a repository from 
 
 ### Easy to setup infra by Backstage template
 
