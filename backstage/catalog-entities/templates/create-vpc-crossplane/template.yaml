@@ -42,6 +42,7 @@ spec:
         vpcCidrBlock:
           title: VpcCidrBlock
           type: string
+          default: "10.0.0.0/16"
           description: Network CIDR block of the Amazon VPC
           ui:autofocus: true
     - title: Configuration repository options
@@ -55,6 +56,7 @@ spec:
             allowedHosts: ['github.com']
         formBranch:
           type: string
+          default: vpc/crossplane
         targetBranchName:
           default: main
           type: string
