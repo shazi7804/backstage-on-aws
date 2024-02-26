@@ -4,7 +4,7 @@ metadata:
   name: ${{ values.name + "igw" }}
   annotations:
     argocd.argoproj.io/sync-wave: "2"
-    # argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   forProvider:
     region: us-east-1
