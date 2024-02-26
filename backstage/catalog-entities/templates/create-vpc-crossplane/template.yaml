@@ -46,6 +46,8 @@ spec:
             # allowedOwners: ['shazi7804']
             allowedHosts: ['github.com']
         formBranch:
+          type: string
+        targetBranchName:
           default: main
           type: string
   steps:
@@ -64,7 +66,8 @@ spec:
       action: publish:github:pull-request
       input:
         repoUrl: ${{ parameters.repoUrl }}
-        branchName: ${{ parameters.defaultBranch }}
+        branchName: ${{ parameters.formBranch }}
+        targetBranchName: ${{ parameters.targetBranchName }}
         title: Create an Amazon VPC
         description: Create an Amazon VPC with CIDR block ${{ parameters.vpcCidrBlock }}
         commitMessage: Create an Amazon VPC with CIDR block ${{ parameters.vpcCidrBlock }} by ${{ parameters.owner }}
