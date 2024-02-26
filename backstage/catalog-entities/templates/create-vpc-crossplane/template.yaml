@@ -29,6 +29,14 @@ spec:
           ui:options:
             catalogFilter:
               kind: User
+    - title: AWS environment
+      properties:
+        region:
+          title: region
+          type: string
+          default: us-east-1
+          description: AWS Region
+          ui:autofocus: true
     - title: Configuration VPC options
       properties:
         vpcCidrBlock:
@@ -60,6 +68,7 @@ spec:
         values:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
+          region: ${{ parameters.region }}
           vpcCidrBlock: ${{ parameters.vpcCidrBlock }}
     - id: pull-request
       name: Publishing Pull Request to Github

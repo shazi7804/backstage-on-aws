@@ -1,16 +1,17 @@
 apiVersion: ec2.aws.upbound.io/v1beta1
 kind: VPC
 metadata:
-  name: ${{ values.name + "/Vpc" }}
+  name: ${{ values.name + "vpc" }}
   annotations:
     argocd.argoproj.io/sync-wave: "1"
     # argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   forProvider:
-    region: us-east-1
+    region: ${{ values.region | dump }}
     cidrBlock: ${{ values.vpcCidrBlock | dump }}
     enableDnsSupport: true
-    enableDnsHostNames: true
     instanceTenancy: default
+    tags:
+      Name: ${{ values.name + "/Vpc" }}
   providerConfigRef:
     name: default
