@@ -322,12 +322,21 @@ Verify crossplane providers `healthy` and `installed`
 
 Login the Backstage console
 
-### New a repository from 
+### New a Github repository
+
+![](img/create-github-repository.png)
 
 ### Easy to setup infra by Backstage template
 
+![](img/create-vpc-crossplane.png)
 
 ### Easy to setup security by Backstage template
+
+
+
+### Deploy an Game 2048 App
+
+![](img/template-game-2048.png)
 
 ## Injection best practices before deployment by Kyverno
 
