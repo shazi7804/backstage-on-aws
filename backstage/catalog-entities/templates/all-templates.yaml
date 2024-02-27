@@ -5,8 +5,8 @@ metadata:
     description: Approved templates for Backstage for AWS
 spec:
     targets: 
-      - ./example-nodejs-eks/template.yaml
       - ./create-ec2-terraform/template.yaml
       - ./create-github-repository/template.yaml
+      - ./game-2048-eks/template.yaml
     rules:
         - allow: [Template]

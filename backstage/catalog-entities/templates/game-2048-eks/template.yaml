@@ -1,0 +1,96 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: game-2048-eks
+  title: Game 2048 App on Amazon EKS - PullRequest
+  description: Deploy a Game 2048 App on Amazon EKS
+  tags: ['crossplane', 'aws', 'vpc', 'network']
+spec:
+  owner: guest
+  type: service
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+        - owner
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: User
+    - title: AWS environment
+      properties:
+        region:
+          title: region
+          type: string
+          default: us-east-1
+          description: AWS Region
+          ui:autofocus: true
+    - title: Application Configuration
+      properties:
+        namespace:
+          title: namespace
+          type: string
+          default: "game-2048"
+          description: Namespace of application on Amazon EDS
+          ui:autofocus: true
+        containerImage:
+          title: containerImage
+          type: string
+          default: "public.ecr.aws/l6m2t8p7/docker-2048:latest"
+          description: container image of application on Amazon EDS
+          ui:autofocus: true
+    - title: Configuration repository options
+      properties:
+        repoUrl: # need a place to store this entity information.
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            # allowedOwners: ['shazi7804']
+            allowedHosts: ['github.com']
+        formBranch:
+          type: string
+          default: vpc/app/game-2048
+        targetBranchName:
+          default: main
+          type: string
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./content
+        targetPath: ./templates/backstage/game-2048-eks
+        values:
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
+          namespace: ${{ parameters.namespace }}
+          containerImage: ${{ parameters.containerImage }}
+    - id: pull-request
+      name: Publishing Pull Request to Github
+      action: publish:github:pull-request
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        branchName: ${{ parameters.formBranch }}
+        targetBranchName: ${{ parameters.targetBranchName }}
+        title: Create an Game 2048 Application on Amazon EKS
+        description: Create an Game 2048 Application on Amazon EKS
+        commitMessage: Create an Game 2048 Application on Amazon EKS
+        gitAuthorName: ${{ user.entity.metadata.name }}
+        gitAuthorEmail: ${{ user.entity.spec.profile.email }}
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
