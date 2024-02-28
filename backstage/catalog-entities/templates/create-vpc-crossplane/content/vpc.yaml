@@ -10,7 +10,7 @@ spec:
     region: ${{ values.region | dump }}
     cidrBlock: ${{ values.vpcCidrBlock | dump }}
     enableDnsSupport: true
-    instanceTenancy: default
+    instanceTenancy: ${{ values.instanceTenancy | dump}
     tags:
       Name: ${{ values.name + "/Vpc" }}
   providerConfigRef:

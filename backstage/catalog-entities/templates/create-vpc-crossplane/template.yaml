@@ -45,6 +45,13 @@ spec:
           default: "10.0.0.0/16"
           description: Network CIDR block of the Amazon VPC
           ui:autofocus: true
+        instanceTenancy:
+          title: InstanceTenancy
+          type: string
+          default: "default"
+          enum: ['default', 'dedicated']
+          description: instance tenancy
+          ui:autofocus: true
     - title: Configuration repository options
       properties:
         repoUrl: # need a place to store this entity information.
@@ -72,6 +79,7 @@ spec:
           owner: ${{ parameters.owner }}
           region: ${{ parameters.region }}
           vpcCidrBlock: ${{ parameters.vpcCidrBlock }}
+          instanceTenancy: ${{ parameters.instanceTenancy }}
     - id: pull-request
       name: Publishing Pull Request to Github
       action: publish:github:pull-request
