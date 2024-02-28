@@ -43,6 +43,7 @@ spec:
           type: string
         repoVisibility:
           type: string
+          default: public
           enum: ['private', 'public', 'internal']
   steps:
     - id: create-repo
@@ -58,6 +59,7 @@ spec:
         values:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
+          repoVisibility: ${{ parameters.repoVisibility }}
           repoUrl: ${{ parameters.repoUrl | parseRepoUrl }}
     - id: init-repo
       name: Initialize Repository
@@ -65,7 +67,6 @@ spec:
       input:
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: ${{ parameters.defaultBranch }}
-        repoVisibility: ${{ parameters.repoVisibility }}
         gitAuthorName: ${{ user.entity.metadata.name }}
         gitAuthorEmail: ${{ user.entity.spec.profile.email }}
 

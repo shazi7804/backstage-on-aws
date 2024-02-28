@@ -2,9 +2,9 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: setup-account-security
-  title: Setup Account security
+  title: Setup Account security by Crossplane
   description: Setup account security such as CloudTrail, GuardDuty etc.
-  tags: ['security', 'account', 'cloudtrail', 'guardduty']
+  tags: ['security', 'account', 'cloudtrail', 'guardduty', crossplane]
 spec:
   owner: guest
   type: service
@@ -37,13 +37,13 @@ spec:
           default: us-east-1
           description: AWS Region
           ui:autofocus: true
-    - title: Configuration Security options
+    - title: Configuration
       properties:
-        vpcCidrBlock:
-          title: VpcCidrBlock
+        bucketName:
+          title: bucketName
           type: string
-          default: "10.0.0.0/16"
-          description: Network CIDR block of the Amazon VPC
+          default: ""
+          description: Amazon S3 bucket name for CloudTrail logs
           ui:autofocus: true
     - title: Configuration repository options
       properties:

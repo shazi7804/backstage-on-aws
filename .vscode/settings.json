@@ -1,5 +1,12 @@
 {
     "yaml.schemas": {
-        "https://json.schemastore.org/app-config.json": "file:///Users/scottlwk/Github/backstage-on-aws/backstage/catalog-entities/templates/create-github-repository/template.yaml"
+        "https://json.schemastore.org/app-config.json": [
+            "file:///Users/scottlwk/Github/backstage-on-aws/backstage/catalog-entities/templates/create-github-repository/template.yaml",
+            "file:///Users/scottlwk/Github/backstage-on-aws/backstage/catalog-entities/templates/create-eks-cluster/template.yaml",
+            "file:///Users/scottlwk/Github/backstage-on-aws/backstage/catalog-entities/templates/create-ec2-terraform/template.yaml",
+            "file:///Users/scottlwk/Github/backstage-on-aws/backstage/catalog-entities/templates/create-vpc-crossplane/template.yaml",
+            "file:///Users/scottlwk/Github/backstage-on-aws/backstage/catalog-entities/templates/game-2048-eks/template.yaml",
+            "file:///Users/scottlwk/Github/backstage-on-aws/backstage/catalog-entities/templates/setup-account-security-crossplane/template.yaml"
+        ]
     }
 }

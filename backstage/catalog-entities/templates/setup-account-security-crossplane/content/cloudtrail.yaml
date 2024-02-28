@@ -9,7 +9,7 @@ metadata:
 spec:
   forProvider:
     includeGlobalServiceEvents: false
-    region: us-west-1
+    region: ${{ values.region | dump }}
     s3BucketNameSelector:
       matchLabels:
         testing.upbound.io/example-name: foo
@@ -29,7 +29,7 @@ metadata:
 spec:
   forProvider:
     forceDestroy: true
-    region: us-west-1
+    region: ${{ values.region | dump }}
 
 ---
 

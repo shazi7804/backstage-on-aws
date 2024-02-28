@@ -284,7 +284,7 @@ data:
         secure: false
         headers:
         Cookie:
-          $env: 'ARGOCD_AUTH_TOKEN'
+          $env: 'argocd.token=ARGOCD_AUTH_TOKEN'
 ```
 
 Apply `backstage-app-config.yaml` and rollout backstage pods.
@@ -322,17 +322,23 @@ Verify crossplane providers `healthy` and `installed`
 
 Login the Backstage console
 
-### New a Github repository
+### I need to create a Github repository for source version control.
 
 ![](img/create-github-repository.png)
 
-### Easy to setup infra by Backstage template
+### I need an infrastructure to access other services on company network.
 
 ![](img/create-vpc-crossplane.png)
 
-### Easy to setup security by Backstage template
+### I need some projects for compliance security requirements such as logging, but Backstage has no templates to use and infosec is busy. How can I do?
 
+Import existing template search from Github repository like `https://github.com/shazi7804/backstage-on-aws/blob/main/backstage/catalog-entities/templates/setup-account-security/template.yaml`
 
+![](img/register-template.png)
+
+A security template from external resource
+
+![](img/setup-account-security.png)
 
 ### Deploy an Game 2048 App
 

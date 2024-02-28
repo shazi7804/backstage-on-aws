@@ -7,7 +7,7 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   forProvider:
-    region: us-east-1
+    region: ${{ values.region | dump }}
     vpcIdRef:
       name: ${{ values.name + "vpc" }}
   providerConfigRef:
