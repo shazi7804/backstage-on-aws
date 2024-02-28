@@ -51,6 +51,8 @@ spec:
       action: github:repo:create
       input:
         repoUrl: ${{ parameters.repoUrl }}
+        values:
+          repoVisibility: ${{ parameters.repoVisibility }}
     - id: fetch-base
       name: Fetch Base
       action: fetch:template
@@ -59,7 +61,6 @@ spec:
         values:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
-          repoVisibility: ${{ parameters.repoVisibility }}
           repoUrl: ${{ parameters.repoUrl | parseRepoUrl }}
     - id: init-repo
       name: Initialize Repository
