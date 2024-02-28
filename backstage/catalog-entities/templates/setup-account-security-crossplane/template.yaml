@@ -56,7 +56,7 @@ spec:
             allowedHosts: ['github.com']
         formBranch:
           type: string
-          default: vpc/crossplane
+          default: trail/crossplane
         targetBranchName:
           default: main
           type: string
@@ -66,12 +66,12 @@ spec:
       action: fetch:template
       input:
         url: ./content
-        targetPath: ./templates/backstage/create-vpc-crossplane
+        targetPath: ./templates/backstage/setup-account-security
         values:
           name: ${{ parameters.name }}
           owner: ${{ parameters.owner }}
           region: ${{ parameters.region }}
-          vpcCidrBlock: ${{ parameters.vpcCidrBlock }}
+          bucketName: ${{ parameters.bucketName }}
     - id: pull-request
       name: Publishing Pull Request to Github
       action: publish:github:pull-request

@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: create-a-github-repository
   title: Create a Github Repository
-  description: Creates a Github Repository
+  description: Create a Github Repository
   tags: ['github']
 spec:
   owner: guest
@@ -41,6 +41,10 @@ spec:
         defaultBranch:
           default: main
           type: string
+        protectDefaultBranch:
+          default: false
+          enum: [true, false]
+          type: boolean
         repoVisibility:
           type: string
           default: public
@@ -62,6 +66,7 @@ spec:
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: ${{ parameters.defaultBranch }}
         repoVisibility: ${{ parameters.repoVisibility }}
+        protectDefaultBranch: ${{ parameters.protectDefaultBranch }}
         gitAuthorName: ${{ user.entity.metadata.name }}
         gitAuthorEmail: ${{ user.entity.spec.profile.email }}
 

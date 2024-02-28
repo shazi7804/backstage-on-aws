@@ -1,0 +1,59 @@
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  annotations:
+    crossplane.io/external-name: ${{ values.bucketName | dump }}
+    meta.upbound.io/example-id: cloudtrail/v1beta1/trail
+  labels:
+    testing.upbound.io/trail-bucket-name: ${{ values.bucketName | dump }}
+  name: ${{ values.bucketName | dump }}
+spec:
+  forProvider:
+    forceDestroy: true
+    region: ${{ values.region | dump }}
+
+---
+
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: BucketPolicy
+metadata:
+  annotations:
+    meta.upbound.io/example-id: cloudtrail/v1beta1/trail
+  labels:
+    testing.upbound.io/example-name: ${{ values.bucketName + '-policy' }}
+  name: ${{ values.bucketName + '-policy' }}
+spec:
+  forProvider:
+    bucketSelector:
+      matchLabels:
+        testing.upbound.io/example-name: ${{ values.bucketName + '-policy' }}
+    policy: |
+      {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Sid": "AWSCloudTrailAclCheck",
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": "cloudtrail.amazonaws.com"
+                  },
+                  "Action": "s3:GetBucketAcl",
+                  "Resource": "*"
+              },
+              {
+                  "Sid": "AWSCloudTrailWrite",
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": "cloudtrail.amazonaws.com"
+                  },
+                  "Action": "s3:PutObject",
+                  "Resource": "arn:aws:s3:::*",
+                  "Condition": {
+                      "StringEquals": {
+                          "s3:x-amz-acl": "bucket-owner-full-control"
+                      }
+                  }
+              }
+          ]
+      }
+    region: ${{ values.region | dump }}
