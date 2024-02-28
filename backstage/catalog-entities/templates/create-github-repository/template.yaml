@@ -46,13 +46,13 @@ spec:
           default: public
           enum: ['private', 'public', 'internal']
   steps:
-    - id: create-repo
-      name: Create a Github Repository
-      action: github:repo:create
-      input:
-        repoUrl: ${{ parameters.repoUrl }}
-        values:
-          repoVisibility: ${{ parameters.repoVisibility }}
+    # - id: create-repo
+    #   name: Create a Github Repository
+    #   action: github:repo:create
+    #   input:
+    #     repoUrl: ${{ parameters.repoUrl }}
+    #     values:
+    #       repoVisibility: ${{ parameters.repoVisibility }}
     - id: fetch-base
       name: Fetch Base
       action: fetch:template
@@ -64,10 +64,11 @@ spec:
           repoUrl: ${{ parameters.repoUrl | parseRepoUrl }}
     - id: init-repo
       name: Initialize Repository
-      action: github:repo:push
+      action: publish:github
       input:
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: ${{ parameters.defaultBranch }}
+        repoVisibility: ${{ parameters.repoVisibility }}
         gitAuthorName: ${{ user.entity.metadata.name }}
         gitAuthorEmail: ${{ user.entity.spec.profile.email }}
 
