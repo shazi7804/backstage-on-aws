@@ -346,4 +346,4 @@ A security template from external resource
 
 ## Injection best practices before deployment by Kyverno
 
-To be continued ...
+TBD

@@ -18,6 +18,12 @@ export ECR_REPO_URI="${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_RE
 npm install -g aws-cdk@latest yarn --force
 cdk --version
 
+## Install Helm
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+helm version
+
 ## Install Kubectl
 curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.5/2024-01-04/bin/linux/amd64/kubectl
 chmod +x ./kubectl
