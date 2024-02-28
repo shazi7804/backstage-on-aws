@@ -46,13 +46,6 @@ spec:
           default: public
           enum: ['private', 'public', 'internal']
   steps:
-    # - id: create-repo
-    #   name: Create a Github Repository
-    #   action: github:repo:create
-    #   input:
-    #     repoUrl: ${{ parameters.repoUrl }}
-    #     values:
-    #       repoVisibility: ${{ parameters.repoVisibility }}
     - id: fetch-base
       name: Fetch Base
       action: fetch:template
