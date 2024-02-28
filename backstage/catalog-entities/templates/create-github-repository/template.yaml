@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: create-github-repository
-  title: Creates a Github Repository
+  title: Create a Github Repository
   description: Creates a Github Repository
   tags: ['github']
 spec:
