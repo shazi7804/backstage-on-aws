@@ -8,5 +8,6 @@ spec:
       - ./create-ec2-terraform/template.yaml
       - ./create-github-repository/template.yaml
       - ./game-2048-eks/template.yaml
+      - ./templates/backstage/create-vpc-crossplane
     rules:
         - allow: [Template]
