@@ -330,16 +330,6 @@ Login the Backstage console
 
 ![](img/create-vpc-crossplane.png)
 
-### I need some projects for compliance security requirements such as logging, but Backstage has no templates to use and infosec is busy. How can I do?
-
-Import existing template search from Github repository like `https://github.com/shazi7804/backstage-on-aws/blob/main/backstage/catalog-entities/templates/setup-account-security/template.yaml`
-
-![](img/register-template.png)
-
-A security template from external resource
-
-![](img/setup-account-security.png)
-
 ### Deploy an Game 2048 App
 
 ![](img/template-game-2048.png)
