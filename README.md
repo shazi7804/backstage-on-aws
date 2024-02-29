@@ -23,7 +23,7 @@ The following prerequisites are required to complete this workshop:
 - An internet browser such as Chrome, Firefox, Safari, Opera, or Edge.
 - Access to an email account to login to Workshop Studio.
 
-## Getting started (Administrator View)
+## Getting started (Platform Engineer View)
 
 ### AWS Cloud9 Setup
 
